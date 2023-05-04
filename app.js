@@ -6,7 +6,7 @@ app.use(bodyparser.urlencoded({extended: true}));
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
 app.get('/', (req, res) => {
-    let games = ["simon", "Snake", "mind", "guess"];
+    let games = ["simon", "snake", "mind", "guess"];
      res.render('dashboard',{games:games});
     });
 app.get("/game/:gamename", (req, res) => {
