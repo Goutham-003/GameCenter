@@ -1,41 +1,78 @@
 <style>
     @import url('https://fonts.googleapis.com/css?family=Russo+One');
-    h2{
-        font-family: 'Russo One', sans-serif;
-    }
-    nav{
-        
-        margin:0%;
-        background-color: rgba(0, 0, 0, 0.441);
-        font-family: 'Fira Sans' , sans-serif;
+    nav {
+        display: flex;
+        justify-content: space-between;
         align-items: center;
-        display:flex;
-        gap:20px;
-    }
-    a{
-        font-family: 'Russo One', sans-serif;
-        font-weight: bolder;
-        color:rgb(218, 161, 161);
+        background-color: #333333a9;
+        color: #fff;
+        padding: 10px;
+      }
+      
+      .nav-left a {
+        font-size: 24px;
         text-decoration: none;
-    }
-     nav > li{
-        justify-self: flex-end;
-        flex:1;
-        list-style: none;
-    }
-    nav > h2{
-        color:rgb(240, 240, 240)
-    }  
-    body{
-        margin:0;
-    }  
+        color: #fff;
+        font-family: 'Russo One', sans-serif;
+      }
+      
+      .nav-right {
+        display: flex;
+        align-items: center;
+      }
+      
+      .profile-pic {
+        position: relative;
+        cursor: pointer;
+      }
+      
+      .profile-pic img {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        margin-right: 10px;
+      }
+      
+      .dropdown-menu {
+        display: none;
+        position: absolute;
+        top: 100%;
+        right: 0;
+        z-index: 1;
+        background-color: #fff;
+        padding: 10px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      }
+      
+      .dropdown-menu a {
+        display: block;
+        text-decoration: none;
+        color: #333;
+        padding: 5px;
+      }
+      
+      .dropdown-menu a:hover {
+        background-color: #eee;
+      }
+      
+      .profile-pic:hover .dropdown-menu {
+        display: block;
+      }
+      
 </style>
 
 <nav>
-    <h2>Game Center</h2>
-    <br><br>
-    <!-- <li><a href="/"> Game Center</a></li> -->
-    <li><a href="#"> Login</a></li>
-    <li><a href="#"> Register</a></li>
-    <li class="user"><a href="#">Logout<i class="fas fa-sign-out-alt"></i></a></li>
-</nav>
+    <div class="nav-left">
+      <a href="#">Game Center</a>
+    </div>
+    <div class="nav-right">
+      <div class="profile-pic">
+        <img src="/ironMan.jpg" alt="Profile Picture">
+        <div class="dropdown-menu">
+          <a href="#">profile</a>
+          <a href="#">Logout</a>
+        </div>
+      </div>  
+    </div>
+  </nav>
+  
