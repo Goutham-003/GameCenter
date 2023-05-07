@@ -24,6 +24,19 @@ const updateFoodPosition = () => {
 const handleGameOver = () => {
     // Clearing the timer and reloading the page on game over
     clearInterval(setIntervalId);
+    console.log("Game Over!" + " Score: " + score + " High Score: " + highScore);
+    const data = {
+        score: score,
+        highScore: highScore
+    }
+    fetch("/dataBase/update", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      })
+        .then(response => response.json())
+        .then(result => console.log(result))
+        .catch(error => console.error(error));
     alert("Game Over! Press OK to replay...");
     location.reload();
 }
