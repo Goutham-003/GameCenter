@@ -29,7 +29,7 @@ const handleGameOver = () => {
         score: score,
         highScore: highScore
     }
-    fetch("/dataBase/update", {
+    fetch("/api/books", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data)

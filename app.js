@@ -1,13 +1,17 @@
 const express = require('express');
 const app = express();
 const bodyparser  = require('body-parser');
-const mongoose = require('mongoose')
-const url = `mongodb+srv://shaikriyaz20csm:Riyaz$03_mongodb@cluster0.7rlqko2.mongodb.net/Cluster0`;
-const connectionParams={
+const mongoose = require('mongoose');
+require('dotenv').config()
+const Player = require('./models/player');
+const url = `${process.env.MONGO_URL}`
+mongoose.connect(url, {
     useNewUrlParser: true,
-    useCreateIndex: true,
-    useUnifiedTopology: true 
-}
+    useUnifiedTopology: true
+  })
+    .then(() => console.log("Connected to MongoDB Atlas"))
+    .catch(error => console.error(error));
+  
 
 app.use(bodyparser.urlencoded({extended: true}));
 app.set('view engine', 'ejs');
@@ -27,17 +31,22 @@ app.listen(8080, () => {
 });
 
 
-
+app.post('/regester', (req, res) => {
+    let username = req.body.username;
+    let password = req.body.password;
+    let displayName = req.body.displayName;
+    let player = new Player({
+        userName: username,
+        password: password,
+        displayName: displayName
+    });
+    player.save().then(() => {
+        console.log("Player saved");
+        res.redirect('/');
+    }).catch((err) => {
+        console.log(err);
+        res.redirect('/');
+    });
+});
 
 //db.js
-
-
-
-mongoose.connect(url,connectionParams)
-    .then( () => {
-        console.log('Connected to database ')
-    })
-    .catch( (err) => {
-        console.error(`Error connecting to the database. \n${err}`);
-        
-    })
