@@ -1,5 +1,10 @@
 <style>
+    @import url('https://fonts.googleapis.com/css?family=Russo+One');
+    h2{
+        font-family: 'Russo One', sans-serif;
+    }
     nav{
+        
         margin:0%;
         background-color: rgba(0, 0, 0, 0.441);
         font-family: 'Fira Sans' , sans-serif;
@@ -8,11 +13,13 @@
         gap:20px;
     }
     a{
+        font-family: 'Russo One', sans-serif;
         font-weight: bolder;
         color:rgb(218, 161, 161);
         text-decoration: none;
     }
      nav > li{
+        justify-self: flex-end;
         flex:1;
         list-style: none;
     }
@@ -27,7 +34,7 @@
 <nav>
     <h2>Game Center</h2>
     <br><br>
-    <li><a href="/"> Game Center</a></li>
+    <!-- <li><a href="/"> Game Center</a></li> -->
     <li><a href="#"> Login</a></li>
     <li><a href="#"> Register</a></li>
     <li class="user"><a href="#">Logout<i class="fas fa-sign-out-alt"></i></a></li>

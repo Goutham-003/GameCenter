@@ -17,19 +17,20 @@
     <div class="hero" style = "margin:0;">
 
         <div class="main-panel">
-
-            <!-- <h1>Game Center</h1> -->
-            <!-- {%for i in games%} -->
-            <!-- <img class="card-img-top" style = "width:20%;" src="/static/images/ironMan.jpg" alt="Card image cap">     -->
             <% for(var i = 0; i < games.length; i++) { %>
                 <div onclick="window.location.href = '/game/<%=games[i]%>'" class="d-flex flex-column text-center text-light game-card" style = "width:20%;">
-                    <img class="card-img-top rounded-5 "  src="../images/ironMan.jpg" alt="Card image cap">
+                    <img class="card-img-top rounded-3 "  src="../images/ironMan.jpg" alt="Card image cap">
                         <p class = "card-title"><%=games[i]%></p>
                 </div>
             <%}%>
             <!-- {%endfor%} -->
         </div>
         <div class="score-panel">
+            <% for(var i = 0; i < players.length; i++) { %>
+                <div class="player-card">
+                    <%=players[i]%>
+                </div>
+            <%}%>
         </div>
     </div>
     

@@ -19,8 +19,9 @@ app.use(bodyparser.json());
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
 app.get('/', (req, res) => {
-    let games = ["simon", "snake", "mind", "guess"];
-     res.render('dashboard',{games:games});
+    let games = ["simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess"];
+    let players = ["player1", "player2","player3"];
+     res.render('dashboard',{games:games, players:players});
     });
 app.get("/game/:gamename", (req, res) => {
     let gamename = req.params.gamename;
