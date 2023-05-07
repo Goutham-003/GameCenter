@@ -25,18 +25,39 @@ const handleGameOver = () => {
     // Clearing the timer and reloading the page on game over
     clearInterval(setIntervalId);
     console.log("Game Over!" + " Score: " + score + " High Score: " + highScore);
-    const data = {
-        score: score,
-        highScore: highScore
+   
+   
+    const xhr = new XMLHttpRequest();
+    const url = "/player/update";
+    xhr.open("POST", url, true);
+    xhr.setRequestHeader("Content-Type", "application/json");
+    xhr.onreadystatechange = function() {
+    if (xhr.readyState === 4 && xhr.status === 200) {
+        console.log(xhr.responseText);
     }
-    fetch("/api/books", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
-      })
-        .then(response => response.json())
-        .then(result => console.log(result))
-        .catch(error => console.error(error));
+    };
+    const data = JSON.stringify({
+        userName: "shaikRiyaz",    
+        gameName: "snake",
+        score: score
+    });
+    console.log(data);
+    xhr.send(data);
+
+
+    // const data = {
+    //     gameName: "snake",
+    //     score: score
+    // }
+
+    // fetch("/player/update", {
+    //     method: "POST",
+    //     headers: { "Content-Type": "application/json" },
+    //     body: JSON.stringify(data)
+    //   })
+    //     .then(response => response.json())
+    //     .then(result => console.log(result))
+    //     .catch(error => console.error(error));
     alert("Game Over! Press OK to replay...");
     location.reload();
 }
