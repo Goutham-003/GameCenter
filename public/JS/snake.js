@@ -37,7 +37,7 @@ const handleGameOver = () => {
     }
     };
     const data = JSON.stringify({
-        userName: "shaikRiyaz",    
+        userName: "gouthamS",    
         gameName: "snake",
         score: score
     });
