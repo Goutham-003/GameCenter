@@ -3,9 +3,9 @@ require('dotenv').config();
 const mongoose = require('mongoose');
 const Player = require('../models/player');
 const ScoreCard = require('../models/scorecard');
-const player = require('../models/player');
 const url = `${process.env.MONGO_URL}`;
 
+// connection
 mongoose.connect(url, {
     useNewUrlParser: true,
     useUnifiedTopology: true
@@ -14,20 +14,24 @@ mongoose.connect(url, {
     .catch(error => console.error(error));
 
 
-// module.exports.addUser = (username, password, displayName) => {
-//     let player = new Player({
-//         userName: username,
-//         password: password,
-//         displayName: displayName
-//     });
-//     player.save().then(() => {
-//         console.log("Player saved");
-//         return 1;
-//     }).catch((err) => {
-//         throw new Error("Player not found" + err);
-//     });
-// }
-module.exports.addUser = (username, password, displayName) => {
+module.exports.getPlayer = (username) => {
+    let player = Player.findOne({userName: username}).then((player) => {
+        console.log(player);
+        return player;
+    }).catch((err) => {
+        return new Error("Player not found" + err);
+    });
+}
+// add a new player
+module.exports.addPlayer = (username, password, displayName) => {
+    this.addUser(username, password, displayName).then(() => {
+        this.addScoreCard(username);
+    }).catch((err) => {
+        console.error("Error saving player:", err);
+        throw err; // reject the Promise with the error
+        });
+}
+function addUser(username, password, displayName) {
     let player = new Player({
       userName: username,
       password: password,
@@ -41,8 +45,9 @@ module.exports.addUser = (username, password, displayName) => {
         throw err; // reject the Promise with the error
       });
   }
-  
-module.exports.addScoreCard = (username) => {
+
+// get a player scorecard
+function addScoreCard (username){
     let scoreCard = new ScoreCard({
         username: username,
         totalScore: 0,
@@ -55,6 +60,7 @@ module.exports.addScoreCard = (username) => {
     });
 }
 
+// update a player scorecard
 module.exports.updateScore = (userName, gameName, score) =>{
     ScoreCard.findOne({username: userName}).then((player) => {
         let gameScore = player.gameScores.find(gs => gs.gameName === gameName);
@@ -79,6 +85,7 @@ module.exports.updateScore = (userName, gameName, score) =>{
     return 1;
 }
 
+// get the player's highscore of a particular game
 module.exports.getHighScore = (userName, gameName) => {
     ScoreCard.findOne({username: userName}).then((player) => {
         let gameScore = player.gameScores.find(gs => gs.gameName === gameName);
@@ -91,24 +98,10 @@ module.exports.getHighScore = (userName, gameName) => {
     }).catch((err) => {
         new Error("Player not found" + err);
     });
+
 }
 
-// module.exports.getTopPlayers = () => {
-//     let usernames = [];
-//     ScoreCard.find().sort({ totalScore: -1 }).then((players) => {
-//         // console.log(players);
-//         players.forEach((player) => {
-//           usernames.append(player.username);
-//         });
-//         // console.log(usernames);
-//       }).catch((err) => {
-//         console.error("Error in getting top players usernames:", err);
-//       });
-
-//     // Player.find()
-//     console.log(usernames);
-//     return usernames;
-// }
+// get the players for the leaderboard
 module.exports.getTopPlayers = async () => {
     let usernames = [];
     try {
@@ -116,11 +109,17 @@ module.exports.getTopPlayers = async () => {
       players.forEach((player) => {
         usernames.push(player.username);
       });
-      console.log(usernames);
     } catch (err) {
         console.error("Error in getting top players usernames:", err);
         throw err;
     }
-    return usernames;
+    let displayNames = [];
+    for (let i = 0; i < usernames.length; i++) {
+        let player = await Player.findOne({userName: usernames[i]});
+        displayNames.push(player.displayName);
+    }
+    return displayNames;
   }
+
+
   

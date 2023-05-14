@@ -1,15 +1,4 @@
 const mongoose = require('mongoose')
-
-// const connexion = mongoose.connect(url,{
-//     useNewUrlParser: true,
-//     useUnifiedTopology: true,
-// }).then(() => {
-//     console.log("MONGODB CONNEXION ESTABLISHED");
-// }).catch((err) => {
-//     console.log("MONGODB CONNEXION FAILED");
-//     console.log(err);
-// });
-
 const express = require("express");
 const Book = require("./models/player");
 

@@ -4,6 +4,8 @@ const bodyparser  = require('body-parser');
 const server = require('./backend/server');
 const PORT = process.env.PORT || 8080;
 const session = require('express-session');
+const mongoDBSession = require('connect-mongodb-session')(session);
+const bcrypt = require('bcryptjs');
 const key = process.env.KEY;
 app.use(session({
     secret: key,
@@ -16,23 +18,15 @@ app.use(bodyparser.json());
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
 
-// Middleware for checking if the user is logged in
-const requireLogin = (req, res, next) => {
-    if (req.session.user) {
-      next();
-    } else {
-      res.redirect('/login');
-    }
-  };
 
-app.post('/validate', (req, res) => {
+
+app.post('/login', (req, res) => {
 // Handle the login form submission
 const username = req.body.username;
 const password = req.body.password;
-
+let player = server.getPlayer(username);
 // Perform authentication
-if (username === 'admin' && password === 'password') {
-    req.session.user = username;
+if (username === player.userName && password === player.password) {
     res.redirect('/dashboard');
 } else {
     res.send('Invalid username or password');
@@ -42,7 +36,6 @@ if (username === 'admin' && password === 'password') {
 app.get('/dashboard', async (req, res) => {
     let games = ["simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess"];
     let players = await server.getTopPlayers();
-    console.log(players);
      res.render('dashboard',{games:games, players:players});
     });
 app.get('/', (req, res) => {
@@ -59,12 +52,18 @@ app.listen(PORT, () => {
     console.log('Example app listening on port 8080!');
 });
 
-app.post('/regester', (req, res) => {
-    let username = req.body.username;
-    let password = req.body.password;
-    let displayName = req.body.displayName;
-    server.addUser(username, password, displayName);
-    server.addScoreCard(username);
+app.post('/regester', async (req, res) => {
+    let assault = 10;
+    let username =  await bcrypt.hash(req.body.username, assault);
+    let password = await bcrypt.hash(req.body.password, assault);
+    password = await bcrypt.hash(password, assault);
+    let displayName = await bcrypt.hash(req.body.displayName, assault);
+    server.addPlayer(username, password, displayName).then((player) => {
+        console.log(player);
+    }).catch((err) => {
+        console.log(err);
+    });
+
     render('/dashboard');
 });
 
