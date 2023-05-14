@@ -41,10 +41,11 @@
         </div>
     </div>
     
-    <form action="/regester" method="post">
+    <form action="/regester" method="post" enctype="multipart/form-data">
         <input type="text" name="username" placeholder="username">
         <input type="password" name="password" placeholder="password">
         <input type = "text" name = "displayName" placeholder = "displayName">
+        <input type="file" name="profilePicture" id="profilePicture">
         <input type="submit" value="regester">
     </form>
 </body>

@@ -2,25 +2,60 @@ const express = require('express');
 const app = express();
 const bodyparser  = require('body-parser');
 const server = require('./backend/server');
-
-  
+const PORT = process.env.PORT || 8080;
+const session = require('express-session');
+const key = process.env.KEY;
+app.use(session({
+    secret: key,
+    resave : false,
+    saveUninitialized : false
+}));
 
 app.use(bodyparser.urlencoded({extended: true}));
 app.use(bodyparser.json());
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
-app.get('/', async (req, res) => {
-    let games = ["simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess"];
+
+// Middleware for checking if the user is logged in
+const requireLogin = (req, res, next) => {
+    if (req.session.user) {
+      next();
+    } else {
+      res.redirect('/login');
+    }
+  };
+
+app.post('/validate', (req, res) => {
+// Handle the login form submission
+const username = req.body.username;
+const password = req.body.password;
+
+// Perform authentication
+if (username === 'admin' && password === 'password') {
+    req.session.user = username;
+    res.redirect('/dashboard');
+} else {
+    res.send('Invalid username or password');
+}
+});
+
+app.get('/dashboard', async (req, res) => {
+    let games = ["simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess"];
     let players = await server.getTopPlayers();
     console.log(players);
      res.render('dashboard',{games:games, players:players});
     });
+app.get('/', (req, res) => {
+    res.render('login');
+});
 app.get("/game/:gamename", (req, res) => {
     let gamename = req.params.gamename;
-    res.render(gamename + ".ejs");
+    let highscore = server.getHighScore(req.session.username,gamename);
+    console.log()
+    res.render(gamename + ".ejs", {userName: req.session.username, highScore:highscore});
     });
     
-app.listen(8080, () => {
+app.listen(PORT, () => {
     console.log('Example app listening on port 8080!');
 });
 
@@ -30,7 +65,7 @@ app.post('/regester', (req, res) => {
     let displayName = req.body.displayName;
     server.addUser(username, password, displayName);
     server.addScoreCard(username);
-    res.render('/');
+    render('/dashboard');
 });
 
 
