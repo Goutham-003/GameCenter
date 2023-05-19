@@ -1,82 +1,102 @@
 <style>
-    @import url('https://fonts.googleapis.com/css?family=Russo+One');
-    nav {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        background-color: #333333a9;
-        color: #fff;
-        padding: 10px;
-        position:fixed;
-        width: 100vw;
-      }
-      
-      .nav-left a {
-        font-size: 24px;
-        text-decoration: none;
-        color: #fff;
-        font-family: 'Russo One', sans-serif;
-      }
-      
-      .nav-right {
-        display: flex;
-        align-items: center;
-      }
-      
-      .profile-pic {
-        position: relative;
-        cursor: pointer;
-      }
-      
-      .profile-pic img {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        margin-right: 10px;
-      }
-      
-      .dropdown-menu {
-        display: none;
-        position: absolute;
-        top: 100%;
-        right: 0;
-        z-index: 1;
-        background-color: #fff;
-        padding: 10px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-      }
-      
-      .dropdown-menu a {
-        display: block;
-        text-decoration: none;
-        color: #333;
-        padding: 5px;
-      }
-      
-      .dropdown-menu a:hover {
-        background-color: #eee;
-      }
-      
-      .profile-pic:hover .dropdown-menu {
-        display: block;
-      }
-      
+  @import url('https://fonts.googleapis.com/css?family=Russo+One');
+  .space{
+    width: 100%;
+    height: 70px;
+  }
+  body{
+      margin:0;
+  }
+  .navbar {
+      position: fixed;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #fef6f6cb;
+      color: #000000;
+      padding: 10px;
+    }
+    
+    .navbar__left {
+      font-family: 'Russo One', sans-serif;
+      color:rgb(120, 42, 172);
+      flex-grow: 1;
+    }
+    
+    .navbar__brand {
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+    
+    .navbar__right {
+      display: flex;
+      align-items: center;
+    }
+    
+    .navbar__profile {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    
+    .navbar__profile-picture {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      margin-right: 10px;
+    }
+    
+    .navbar__dropdown {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      background-color: #f9f9f9;
+      border-radius: 4px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      padding: 10px;
+      display: none;
+    }
+    
+    .navbar__profile:hover .navbar__dropdown {
+      display: block;
+    }
+    
+    .profile,
+    .logout {
+      padding:0%;
+      display: block;
+      color: #333;
+      text-decoration: none;
+      padding: 8px 12px;
+      transition: background-color 0.3s ease;
+    }
+    
+    .profile:hover,
+    .logout:hover {
+      background-color: #e6e6e6;
+    }
+    .navbar__brand > a{
+      text-decoration: none;
+      color:rgb(120, 42, 172);
+    }
+    
 </style>
-
-<nav>
-    <div class="nav-left">
-      <a href="#">Game Center</a>
-      <!-- <a href="#">Home</a> -->
-
+<nav class="navbar">
+  <div class="navbar__left">
+    <span class="navbar__brand"><a href="/dashboard">GameMaster</a> </span>
+  </div>
+  <div class="navbar__right">
+    <div class="navbar__profile">
+      <img src="/images/ironMan.jpg" alt="Profile Picture" class="navbar__profile-picture">
+      <div class="navbar__dropdown">
+        <a href="/profile" class="profile">Profile</a>
+        <a href="/leaderBoard" class="logout">LeaderBoard</a>
+        <a href="/logout" class="logout">Logout</a>
+      </div>
     </div>
-    <div class="nav-right">
-      <div class="profile-pic">
-        <img src="/ironMan.jpg" alt="Profile Picture">
-        <div class="dropdown-menu">
-          <a href="#">profile</a>
-          <a href="#">Logout</a>
-        </div>
-      </div>  
-    </div>
-  </nav>
-  
+  </div>
+</nav>
+<div class="space">
+    
+</div>
