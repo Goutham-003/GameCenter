@@ -13,6 +13,7 @@ const key = process.env.KEY;
 app.use(bodyparser.urlencoded({extended: true}));
 app.use(bodyparser.json());
 app.set('view engine', 'ejs');
+app.use(express.static('uploads'));
 app.use(express.static('public'));
 const upload = multer({
     storage: multer.diskStorage({
@@ -69,8 +70,7 @@ app.post('/login', (req, res) => {
 
 app.get('/dashboard',validate, async (req, res) => {
     let games = ["simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess"];
-    let players = await server.getTopPlayers();
-     res.render('dashboard',{games:games});
+     res.render('dashboard',{games:games, userName:req.session.userName});
     });
 
 
@@ -90,7 +90,7 @@ app.get("/game/:gamename", validate, async (req, res) => {
         gamename
       );
       console.log("app.js " + highscore);   
-      res.render(gamename, {userName: req.session.userName, highScore: highscore});
+      res.render(gamename, {userName: req.session.userName, highScore: highscore, userName:req.session.userName});
     } catch (err) {
       // Handle the error appropriately
       console.error(err);
@@ -129,7 +129,7 @@ app.post('/regester', upload.single("avatar"), async (req, res) => {
 app.get('/leaderboard',validate, async(req, res)=>{
     let players = await server.getTopPlayers();
     console.log(players);
-    res.render('leaderboard',{players:players});
+    res.render('leaderboard',{players:players, userName:req.session.userName});
 });
 
 app.post('/player/update', (req, res) => {
@@ -140,4 +140,14 @@ app.post('/player/update', (req, res) => {
     console.log(gameName);
     console.log(score);
     server.updateScore(userName, gameName, score);
+});
+
+
+app.get('/logout', (req, res) => {
+    req.session.destroy((err) => {
+        if(err) {
+            return console.log(err);
+        }
+        res.redirect('/');
+    });
 });

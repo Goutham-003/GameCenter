@@ -23,9 +23,9 @@ async function getPlayer(username) {
     } catch (err) {
         throw new Error("Player not found" + err); // Throw an error to be caught by the caller
     }
-    }
+}
       
-
+module.exports.getPlayer = getPlayer;
 module.exports.validateLogin = async (username, password) =>{
     getPlayer(username)
     .then((player) => {
@@ -112,22 +112,7 @@ module.exports.updateScore = (userName, gameName, score) =>{
     return 1;
 }
 
-// get the player's highscore of a particular game
-// module.exports.getHighScore = async (userName, gameName) => {
-//     await ScoreCard.findOne({username: userName}).then((player) => {
-//         let gameScore = player.gameScores.find(gs => gs.gameName === gameName);
-//         console.log(gameScore);
-//         if (gameScore) {
-//             return gameScore.highScore;
-//         }
-//         else{
-//             return 0;
-//         }
-//     }).catch((err) => {
-//         new Error("Player not found" + err);
-//     });
 
-// }
 
 module.exports.getHighScore = async (userName, gameName) => {
     try {
@@ -148,25 +133,26 @@ module.exports.getHighScore = async (userName, gameName) => {
     }
   };
 
-// get the players for the leaderboard
+
 module.exports.getTopPlayers = async () => {
-    let usernames = [];
-    try {
-      let players = await ScoreCard.find().sort({ totalScore: -1 });
-      players.forEach((player) => {
-        usernames.push(player.username);
-      });
-    } catch (err) {
-        console.error("Error in getting top players usernames:", err);
-        throw err;
+  let topPlayers = [];
+  try {
+    let scorecards = await ScoreCard.find().sort({ totalScore: -1 }).limit(10);
+    // console.log(scorecards);
+    for(i = 0; i < scorecards.length; i++){
+      let player = await Player.findOne({userName: scorecards[i].username});
+      // topPlayers.push(player);
+      topPlayers.push({displayName: player.displayName, score: scorecards[i].totalScore, userName: player.userName});
+
     }
-    let displayNames = [];
-    for (let i = 0; i < usernames.length; i++) {
-        let player = await Player.findOne({userName: usernames[i]});
-        displayNames.push(player.displayName);
-    }
-    return displayNames;
+    // console.log(topPlayers);
   }
+  catch (err) {
+    console.error("Error in getting top players usernames:", err);
+    throw err;
+  }
+  return topPlayers;
+}
 
 
   
