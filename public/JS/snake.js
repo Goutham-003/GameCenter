@@ -1,6 +1,6 @@
 const playBoard = document.querySelector(".play-board");
 const scoreElement = document.querySelector(".score");
-const highScoreElement = document.querySelector(".high-score");
+// const highScoreElement = document.querySelector(".high-score");
 const controls = document.querySelectorAll(".controls i");
 
 let gameOver = false;
@@ -12,8 +12,8 @@ let setIntervalId;
 let score = 0;
 
 // Getting high score from the local storage
-let highScore = localStorage.getItem("high-score") || 0;
-highScoreElement.innerText = `High Score: ${highScore}`;
+// let highScore = localStorage.getItem("high-score") || 0;
+// highScoreElement.innerText = `High Score: ${highScore}`;
 
 const updateFoodPosition = () => {
     // Passing a random 1 - 30 value as food position
@@ -24,9 +24,6 @@ const updateFoodPosition = () => {
 const handleGameOver = () => {
     // Clearing the timer and reloading the page on game over
     clearInterval(setIntervalId);
-    console.log("Game Over!" + " Score: " + score + " High Score: " + highScore);
-   
-   
     const xhr = new XMLHttpRequest();
     const url = "/player/update";
     xhr.open("POST", url, true);
@@ -36,28 +33,12 @@ const handleGameOver = () => {
         console.log(xhr.responseText);
     }
     };
-    const data = JSON.stringify({
-        userName: "gouthamS",    
+    const data = JSON.stringify({   
         gameName: "snake",
         score: score
     });
     console.log(data);
     xhr.send(data);
-
-
-    // const data = {
-    //     gameName: "snake",
-    //     score: score
-    // }
-
-    // fetch("/player/update", {
-    //     method: "POST",
-    //     headers: { "Content-Type": "application/json" },
-    //     body: JSON.stringify(data)
-    //   })
-    //     .then(response => response.json())
-    //     .then(result => console.log(result))
-    //     .catch(error => console.error(error));
     alert("Game Over! Press OK to replay...");
     location.reload();
 }
@@ -91,10 +72,10 @@ const initGame = () => {
         updateFoodPosition();
         snakeBody.push([foodY, foodX]); // Pushing food position to snake body array
         score++; // increment score by 1
-        highScore = score >= highScore ? score : highScore;
-        localStorage.setItem("high-score", highScore);
+        // highScore = score >= highScore ? score : highScore;
+        // localStorage.setItem("high-score", highScore);
         scoreElement.innerText = `Score: ${score}`;
-        highScoreElement.innerText = `High Score: ${highScore}`;
+        // highScoreElement.innerText = `High Score: ${highScore}`;
     }
     // Updating the snake's head position based on the current velocity
     snakeX += velocityX;

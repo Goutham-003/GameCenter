@@ -27,14 +27,29 @@ function checkAnswer(currLevel){
     }
 }
 function RestartGame(){
-    level = 0;
     gamePattern = [];
     playSound("wrong");
-        $("body").addClass("game-over");
-        setTimeout(function(){
-            $("body").removeClass("game-over");
-        },500);
-        $("h1").html("Game Over, Press Any Key to Restart");
+    $("body").addClass("game-over");
+    setTimeout(function(){
+        $("body").removeClass("game-over");
+    },500);
+    $("h1").html("Game Over, Press Any Key to Restart");
+    const xhr = new XMLHttpRequest();
+    const url = "/player/update";
+    xhr.open("POST", url, true);
+    xhr.setRequestHeader("Content-Type", "application/json");
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            console.log(xhr.responseText);
+        }
+    };
+    const data = JSON.stringify({   
+        gameName: "simon",
+        score: level - 1
+    });
+    console.log(data);
+    xhr.send(data);
+    level = 0;
 }
 function playAnimation(name){
     // $("#" + name).addClass("pressed").delay(1000).removeClass("pressed");

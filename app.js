@@ -10,6 +10,10 @@ const PORT = process.env.PORT || 8080;
 const key = process.env.KEY;
 
 
+app.use(bodyparser.urlencoded({extended: true}));
+app.use(bodyparser.json());
+app.set('view engine', 'ejs');
+app.use(express.static('public'));
 const upload = multer({
     storage: multer.diskStorage({
       destination: (req, file, cb) => {
@@ -35,13 +39,9 @@ app.use(session({
     saveUninitialized : false,
     store: sessionStorage,
     cookie: {
-        expires: 600000
+        expires: 600000000
     }
 }));
-app.use(bodyparser.urlencoded({extended: true}));
-app.use(bodyparser.json());
-app.set('view engine', 'ejs');
-app.use(express.static('public'));
 validate = (req, res, next)=>{
     if(req.session.isAuth === true){
         next();
@@ -59,6 +59,7 @@ app.post('/login', (req, res) => {
     // Perform authentication
     if (server.validateLogin(userName, password)) {
         // Set the session variables
+        req.session.userName = userName;
         req.session.isAuth = true;
         res.redirect('/dashboard');
     } else {
@@ -73,12 +74,29 @@ app.get('/dashboard',validate, async (req, res) => {
     });
 
 
-app.get("/game/:gamename",validate, (req, res) => {
-    let gamename = req.params.gamename;
-    let highscore = server.getHighScore(req.session.userName,gamename);
-    res.render(gamename + ".ejs", {userName: req.session.userName, highScore:highscore});
-    });
-    
+// app.get("/game/:gamename",validate, async (req, res) => {
+//     let gamename = req.params.gamename;
+//     let highscore = await server.getHighScore(req.session.userName,gamename);
+//     console.log("app.js "+highscore);
+//     res.render(gamename + ".ejs", {userName: req.session.userName, highScore:highscore});
+//     });
+
+app.get("/game/:gamename", validate, async (req, res) => {
+    try {
+      const gamename = req.params.gamename;
+      console.log(gamename);
+      const highscore = await server.getHighScore(
+        req.session.userName,
+        gamename
+      );
+      console.log("app.js " + highscore);   
+      res.render(gamename, {userName: req.session.userName, highScore: highscore});
+    } catch (err) {
+      // Handle the error appropriately
+      console.error(err);
+      res.status(500).send("Internal Server Error");
+    }
+  });
 app.listen(PORT, () => {
     // console.log('Example app listening on port https://localhost:8080');
     console.log(`Example app listening on port ${PORT}`);
@@ -115,12 +133,11 @@ app.get('/leaderboard',validate, async(req, res)=>{
 });
 
 app.post('/player/update', (req, res) => {
-    let userName = req.body.userName;
+    let userName = req.session.userName;
     let gameName = req.body.gameName;
     let score = req.body.score;
     console.log(userName);
     console.log(gameName);
     console.log(score);
     server.updateScore(userName, gameName, score);
-    res.render('/');
 });

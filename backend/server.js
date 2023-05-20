@@ -94,8 +94,8 @@ module.exports.updateScore = (userName, gameName, score) =>{
         if (gameScore) {
             // Update the score if it's greater than the high score
             if (score > gameScore.highScore) {
-                gameScore.highScore = score;
                 player.totalScore += score - gameScore.highScore;
+                gameScore.highScore = score;
             }
         }
         else{
@@ -113,20 +113,40 @@ module.exports.updateScore = (userName, gameName, score) =>{
 }
 
 // get the player's highscore of a particular game
-module.exports.getHighScore = (userName, gameName) => {
-    ScoreCard.findOne({username: userName}).then((player) => {
-        let gameScore = player.gameScores.find(gs => gs.gameName === gameName);
-        if (gameScore) {
-            return gameScore.highScore;
-        }
-        else{
-            return 0;
-        }
-    }).catch((err) => {
-        new Error("Player not found" + err);
-    });
+// module.exports.getHighScore = async (userName, gameName) => {
+//     await ScoreCard.findOne({username: userName}).then((player) => {
+//         let gameScore = player.gameScores.find(gs => gs.gameName === gameName);
+//         console.log(gameScore);
+//         if (gameScore) {
+//             return gameScore.highScore;
+//         }
+//         else{
+//             return 0;
+//         }
+//     }).catch((err) => {
+//         new Error("Player not found" + err);
+//     });
 
-}
+// }
+
+module.exports.getHighScore = async (userName, gameName) => {
+    try {
+      const player = await ScoreCard.findOne({ username: userName });
+      if (player) {
+        const gameScore = player.gameScores.find((gs) => gs.gameName === gameName);
+        console.log(gameScore);
+        if (gameScore) {
+          return gameScore.highScore;
+        } else {
+          return 0;
+        }
+      } else {
+        return 0;
+      }
+    } catch (err) {
+      throw new Error("Player not found" + err);
+    }
+  };
 
 // get the players for the leaderboard
 module.exports.getTopPlayers = async () => {
