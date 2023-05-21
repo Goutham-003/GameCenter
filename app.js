@@ -51,7 +51,11 @@ validate = (req, res, next)=>{
     }
 }
 app.get('/', (req, res) => {
+    if(req.session.isAuth === true){
+        res.redirect('/dashboard');
+    }else{
     res.render('home');
+    }
 });
 app.post('/login', (req, res) => {
     // Handle the login form submission
@@ -90,7 +94,7 @@ app.get("/game/:gamename", validate, async (req, res) => {
         gamename
       );
       console.log("app.js " + highscore);   
-      res.render(gamename, {userName: req.session.userName, highScore: highscore, userName:req.session.userName});
+      res.render(gamename, {userName: req.session.userName, highScore: highscore});
     } catch (err) {
       // Handle the error appropriately
       console.error(err);
