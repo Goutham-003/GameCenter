@@ -35,6 +35,21 @@ function matchCards(img1, img2) {
   moves.textContent = count;
   if(count<0)
   {
+    const xhr = new XMLHttpRequest();
+    const url = "/player/update";
+    xhr.open("POST", url, true);
+    xhr.setRequestHeader("Content-Type", "application/json");
+    xhr.onreadystatechange = function() {
+    if (xhr.readyState === 4 && xhr.status === 200) {
+        console.log(xhr.responseText);
+    }
+    };
+    const data = JSON.stringify({   
+        gameName: "card",
+        score: score
+    });
+    console.log(data);
+    xhr.send(data);
     alert("You lost the game!!");
     return startGame();
   }
