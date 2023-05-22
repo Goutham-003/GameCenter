@@ -73,7 +73,7 @@ app.post('/login', (req, res) => {
 });
 
 app.get('/dashboard',validate, async (req, res) => {
-    let games = ["simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess"];
+    let games = ["simon", "snake", "mind", "flappybird","dinosaur", "snake", "mind", "flappybird","dinosaur","simon", "snake", "flappybird","dinosaur", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess"];
      res.render('dashboard',{games:games, userName:req.session.userName});
     });
 
