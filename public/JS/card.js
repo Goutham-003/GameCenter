@@ -36,14 +36,22 @@ function matchCards(img1, img2) {
   if(count<0)
   {
     alert("You lost the game!!");
-    return startGame();
+    start.disabled = false;
+    setTimeout(() => {
+      scoreValue.textContent = 0;
+      start.disabled = false;
+      moves.textContent = 15;
+     
+      gameWon = false; // reset the gameWon flag
+      return shuffleCard();
+    }, 1200);
   }
   if (count == 0 && scoreValue.textContent +1< 8) {
     setTimeout(() => {
       scoreValue.textContent = 0;
-     
-      moves.textContent = 20;
-      elapsedTime = 0; // reset the timer
+      start.disabled = false;
+      moves.textContent = 15;
+    
       gameWon = false; // reset the gameWon flag
       return shuffleCard();
     }, 1200);
@@ -57,8 +65,8 @@ function matchCards(img1, img2) {
       setTimeout(() => {
          document.querySelector('.audio-win').play();
         scoreValue.textContent = 0;
-        moves.textContent = 20;
-        elapsedTime = 0; // reset the timer
+        moves.textContent = 15;
+      
         start.disabled = false;
          if(gameWon)
      alert("You won the game!!");
@@ -93,6 +101,21 @@ function matchCards(img1, img2) {
 }
 
 function shuffleCard() {
+  const xhr = new XMLHttpRequest();
+  const url = "/player/update";
+  xhr.open("POST", url, true);
+  xhr.setRequestHeader("Content-Type", "application/json");
+  xhr.onreadystatechange = function() {
+  if (xhr.readyState === 4 && xhr.status === 200) {
+      console.log(xhr.responseText);
+  }
+  };
+  const data = JSON.stringify({   
+      gameName: "card",
+      score: matchedCard
+  });
+  console.log(data);
+  xhr.send(data);
   matchedCard = 0;
   cardOne = cardTwo = "";
 
@@ -108,18 +131,19 @@ function shuffleCard() {
   });
 }
 
-function updateTimer() {
-  // only update the timer if the game is not yet won
-    elapsedTime++;
-    timer.innerText = `Time: ${elapsedTime} sec`;
+// function updateTimer() {
+//   // only update the timer if the game is not yet won
+//     elapsedTime++;
+//     timer.innerText = `Time: ${elapsedTime} sec`;
 
   
-}
+// }
 
 function startGame() {
+  
   shuffleCard();
   start.disabled = true;
-  setInterval(updateTimer, 1000);
+  // setInterval(updateTimer, 1000);
 }
 
 

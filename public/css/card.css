@@ -22,6 +22,11 @@
   /*margin-left:50%;
   height:50px;*/
 }
+.wrapper .high-score{
+    display: flex;
+  flex-direction: row;
+  padding-left: 20px;
+}
 .wrapper .w1{
   display: flex;
   flex-direction: row;
