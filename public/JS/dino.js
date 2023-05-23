@@ -42,6 +42,21 @@ setInterval(() => {
     offsetY = Math.abs(dy - oy);
     // console.log(offsetX, offsetY)
     if (offsetX < 73 && offsetY < 52) {
+        const xhr = new XMLHttpRequest();
+        const url = "/player/update";
+        xhr.open("POST", url, true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            console.log(xhr.responseText);
+        }
+        };
+        const data = JSON.stringify({   
+            gameName: "dino",
+            score: score
+        });
+        console.log(data);
+        xhr.send(data);
         gameOver.innerHTML = "Game Over - Reload to Play Again"
         obstacle.classList.remove('obstacleAni')
         audiogo.play();
