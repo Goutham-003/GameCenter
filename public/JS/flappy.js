@@ -59,7 +59,7 @@ function play(){
         };
         const data = JSON.stringify({   
             gameName: "flappy",
-            score: score_val
+            score: score_val.innerHTML
         });
         console.log(data);
         xhr.send(data);
