@@ -1,4 +1,4 @@
-let move_speed = 3, grativy = 0.5;
+let move_speed = 3, gravity = 0.5;
 let bird = document.querySelector('.bird');
 let img = document.getElementById('bird-1');
 let sound_point = new Audio('/simonSounds/point.mp3');
@@ -48,6 +48,21 @@ function play(){
                 element.remove();
             }else{
                 if(bird_props.left < pipe_sprite_props.left + pipe_sprite_props.width && bird_props.left + bird_props.width > pipe_sprite_props.left && bird_props.top < pipe_sprite_props.top + pipe_sprite_props.height && bird_props.top + bird_props.height > pipe_sprite_props.top){
+                    const xhr = new XMLHttpRequest();
+        const url = "/player/update";
+        xhr.open("POST", url, true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            console.log(xhr.responseText);
+        }
+        };
+        const data = JSON.stringify({   
+            gameName: "flappy",
+            score: score_val
+        });
+        console.log(data);
+        xhr.send(data);
                     game_state = 'End';
                     message.innerHTML = 'Game Over'.fontcolor('red') + '<br>Press Enter To Restart';
                     message.classList.add('messageStyle');
@@ -70,7 +85,7 @@ function play(){
     let bird_dy = 0;
     function apply_gravity(){
         if(game_state != 'Play') return;
-        bird_dy = bird_dy + grativy;
+        bird_dy = bird_dy + gravity;
         document.addEventListener('keydown', (e) => {
             if(e.key == 'ArrowUp' || e.key == ' '){
                 img.src = '/images/Bird-2.png';

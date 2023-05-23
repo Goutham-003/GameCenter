@@ -57,6 +57,7 @@ setInterval(() => {
         });
         console.log(data);
         xhr.send(data);
+      
         gameOver.innerHTML = "Game Over - Reload to Play Again"
         obstacle.classList.remove('obstacleAni')
         audiogo.play();
