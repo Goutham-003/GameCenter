@@ -5,6 +5,7 @@ const session = require('express-session');
 const MongoStore = require('connect-mongo');
 const bcrypt = require('bcryptjs');
 const multer = require('multer');
+const { set } = require('mongoose');
 const app = express();
 const PORT = process.env.PORT || 8080;
 const key = process.env.KEY;
@@ -15,6 +16,15 @@ app.use(bodyparser.json());
 app.set('view engine', 'ejs');
 app.use(express.static('uploads'));
 app.use(express.static('public'));
+
+// app.use( (req, res, next) => {
+//     setTimeout(next, 1000);
+//     res.render('loading');
+//     console.log('preloader');
+//     next();
+//   });
+
+
 const upload = multer({
     storage: multer.diskStorage({
       destination: (req, file, cb) => {
@@ -62,28 +72,20 @@ app.post('/login', (req, res) => {
     const userName = req.body.userName;
     const password = req.body.password;
     // Perform authentication
-    if (server.validateLogin(userName, password)) {
-        // Set the session variables
-        req.session.userName = userName;
-        req.session.isAuth = true;
-        res.redirect('/dashboard');
-    } else {
-        res.send('Invalid userName or password');
-    }
+        if (server.validateLogin(userName, password)) {
+            // Set the session variables
+            req.session.userName = userName;
+            req.session.isAuth = true;
+            res.redirect('/dashboard');
+        } else {
+            res.send('Invalid userName or password');
+        }
 });
 
 app.get('/dashboard',validate, async (req, res) => {
-    let games = ["simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess"];
+    let games = ["simon", "snake", "card","dino","flappy"];
      res.render('dashboard',{games:games, userName:req.session.userName});
     });
-
-
-// app.get("/game/:gamename",validate, async (req, res) => {
-//     let gamename = req.params.gamename;
-//     let highscore = await server.getHighScore(req.session.userName,gamename);
-//     console.log("app.js "+highscore);
-//     res.render(gamename + ".ejs", {userName: req.session.userName, highScore:highscore});
-//     });
 
 app.get("/game/:gamename", validate, async (req, res) => {
     try {
