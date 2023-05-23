@@ -1,4 +1,4 @@
-let move_speed = 3, gravity = 0.5;
+let move_speed = 3, gravity = 0.2;
 let bird = document.querySelector('.bird');
 let img = document.getElementById('bird-1');
 let sound_point = new Audio('/simonSounds/point.mp3');
@@ -114,7 +114,7 @@ function play(){
 
     let pipe_seperation = 0;
 
-    let pipe_gap = 35;
+    let pipe_gap = 45;
 
     function create_pipe(){
         if(game_state != 'Play') return;
