@@ -83,7 +83,7 @@ app.post('/login', (req, res) => {
 });
 
 app.get('/dashboard',validate, async (req, res) => {
-    let games = ["simon", "snake", "card","dino","flappy"];
+    let games = ["simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess","simon", "snake", "mind", "guess"];
      res.render('dashboard',{games:games, userName:req.session.userName});
     });
 
