@@ -154,8 +154,19 @@ module.exports.getTopPlayers = async () => {
   return topPlayers;
 }
 
+module.exports.getScoreCard = async (userName) => {
+  try {
+    const scoreCard = await ScoreCard.findOne({ username: userName });
+    const gameScores = scoreCard.gameScores.map((score) => {
+      return { gameName: score.gameName, highScore: score.highScore };
+    });
+    return gameScores;
+  } catch (err) {
+    console.error("Error in getting scorecard:", err);
+    throw err;
+  }
+};
 
-  
 
 
 
