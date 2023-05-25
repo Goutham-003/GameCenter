@@ -50,7 +50,7 @@ app.use(session({
     saveUninitialized : false,
     store: sessionStorage,
     cookie: {
-        expires: 600000000
+        expires: 100 * 60 * 60 * 24
     }
 }));
 validate = (req, res, next)=>{
@@ -157,3 +157,12 @@ app.get('/logout', (req, res) => {
         res.redirect('/');
     });
 });
+
+app.get('/profile', async (req, res)=>{
+    let player = await server.getPlayer(req.session.userName);
+    let scoreCard = await server.getScoreCard(req.session.userName);
+    console.log(player);
+    console.log(scoreCard);
+    res.render('profile',{playerName:player.displayName, scoreCard:scoreCard});
+
+})
