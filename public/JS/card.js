@@ -127,7 +127,7 @@ function shuffleCard() {
     card.addEventListener('click', flipCard);
 
     let imgTag = card.querySelector('img');
-    imgTag.src = `/images/img-${arr[index]}.png`;
+    imgTag.src = `/images/card/img-${arr[index]}.png`;
   });
 }
 
