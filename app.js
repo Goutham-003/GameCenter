@@ -50,7 +50,7 @@ app.use(session({
     saveUninitialized : false,
     store: sessionStorage,
     cookie: {
-        expires: 600000000
+        expires: 60 * 60 * 24
     }
 }));
 validate = (req, res, next)=>{
