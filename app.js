@@ -167,5 +167,9 @@ app.get('/profile', async (req, res)=>{
     let player = await server.getPlayer(req.session.userName);
     console.log(player);
     let scoreCard = await server.getScoreCard(req.session.userName);
-    res.render('profile',{playerName:player.displayName, scoreCard:scoreCard});
+    res.render('profile',{playerName:player.displayName, scoreCard:scoreCard, userName:req.session.userName});
 })
+
+app.post('/profile/change', upload.single("avatar"), async (req, res) => {
+    
+});
