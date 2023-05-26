@@ -85,19 +85,6 @@ body {
   #profile-pic-input {
     display: none;
   }
-  body {
-    font-family: Arial, sans-serif;
-    text-align: center;
-    margin: 0;
-    padding: 20px;
-    
-  }
-  body {
-  background-image: url('/images/profilebg1.png');
-  background-size: cover;
-  background-attachment: fixed;
-
-    }
 
   h1,h2 {
     margin-bottom: 10px;
@@ -165,11 +152,18 @@ body {
   }
   body {
     background-image: url('/images/profilebg1.png');
-border: 5px;
-background-repeat: no-repeat;
-background-attachment: fixed;
-background-size: calc(100% + 5px) calc(100%);
-}
+    border: 5px;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: calc(100% + 5px) calc(100%);
+    background-image: url('/images/profilebg1.png');
+    background-size: cover;
+    background-attachment: fixed;
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin: 0;
+    padding: 20px;
+  }
 @media screen and (max-width: 1100px) {
 /* Media query for smaller screens */
 body {
