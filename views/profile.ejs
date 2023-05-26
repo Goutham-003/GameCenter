@@ -8,10 +8,10 @@
 </head>
 <body>
     <h1><%=playerName%></h1>
-    <% for(var i = 0; i < scoreCard.length; i++) { %>
-        <p><%=scoreCard[i].gameName%></p>
-        <p><%=scoreCard[i].highScore%></p>
+    <% scoreCard.forEach((score) => { %>
+        <p><%= score.gameName %></p>
+        <p><%= score.highScore %></p>
         <br><br><br>
-          <%}%>
+      <% }); %>
 </body>
 </html>

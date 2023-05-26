@@ -67,19 +67,24 @@ app.get('/', (req, res) => {
     res.render('home');
     }
 });
-app.post('/login', (req, res) => {
+app.post('/login', async (req, res) => {
     // Handle the login form submission
     const userName = req.body.userName;
     const password = req.body.password;
+    // console.log( await server.validateLogin(userName, password));
     // Perform authentication
-        if (server.validateLogin(userName, password)) {
+    let is_valid = await server.validateLogin(userName, password);
+    console.log("isvalid " + is_valid);
+        if ( is_valid === 1) {
             // Set the session variables
             req.session.userName = userName;
             req.session.isAuth = true;
             res.redirect('/dashboard');
-        } else {
+        } else if(is_valid === 0) {
             res.send('Invalid userName or password');
         }
+        else
+            res.send("User doesn't exist");
 });
 
 app.get('/dashboard',validate, async (req, res) => {
@@ -160,6 +165,7 @@ app.get('/logout', (req, res) => {
 
 app.get('/profile', async (req, res)=>{
     let player = await server.getPlayer(req.session.userName);
+    console.log(player);
     let scoreCard = await server.getScoreCard(req.session.userName);
     console.log(player);
     console.log(scoreCard);

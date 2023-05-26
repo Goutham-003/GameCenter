@@ -45,7 +45,7 @@ function RestartGame(){
     };
     const data = JSON.stringify({   
         gameName: "simon",
-        score: level - 1
+        score: level
     });
     console.log(data);
     xhr.send(data);

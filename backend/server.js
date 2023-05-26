@@ -24,30 +24,23 @@ async function getPlayer(username) {
         throw new Error("Player not found" + err); // Throw an error to be caught by the caller
     }
 }
-      
-module.exports.getPlayer = getPlayer;
-module.exports.validateLogin = async (username, password) =>{
-    getPlayer(username)
-    .then((player) => {
-        if(player == null){
-            return -1;
-        }
-        bcrypt.compare(password, player.password).then((result) => {
-            if(result){
-                return 1;
-            }
-            else{
-                return 0;
-            }
-          }
-        );
-    })
-    .catch((err) => {
-        console.error("Error in validating login:", err);
-        throw err;
-    });
-
-}
+module.exports.getPlayer = getPlayer;      
+module.exports.validateLogin = async (username, password) => {
+  const player = await getPlayer(username);
+  if (player != null) {
+    const result = await bcrypt.compare(password, player.password);
+    if (result) {
+      console.log(1);
+      return 1;
+    } else {
+      console.log(0);
+      return 0;
+    }
+  }
+  else{
+    return -1;
+  }
+};
 // add a new player
 module.exports.createPlayer = (username, password, displayName) => {
     const hashedpassword = bcrypt.hashSync(password, 10);
@@ -155,17 +148,30 @@ module.exports.getTopPlayers = async () => {
 }
 
 module.exports.getScoreCard = async (userName) => {
+  console.log("In server");
+  const query = { username: userName };
+  
   try {
-    const scoreCard = await ScoreCard.findOne({ username: userName });
+    const scoreCard = await ScoreCard.findOne(query);
+    // console.log("ScoreCard:");
+    // console.log(scoreCard);
+    // console.log(scoreCard?.gameScores);
+    
+    if (!scoreCard || !scoreCard.gameScores || scoreCard.gameScores.length === 0) {
+      return []; // Return an empty list when scoreCard has no elements
+    }
+    
     const gameScores = scoreCard.gameScores.map((score) => {
       return { gameName: score.gameName, highScore: score.highScore };
     });
+    console.log(gameScores);
     return gameScores;
   } catch (err) {
     console.error("Error in getting scorecard:", err);
     throw err;
   }
 };
+
 
 
 
