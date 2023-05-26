@@ -9,6 +9,7 @@
   </head>
   <body>
     <%- include('nav'); -%>
+    <div class="content">
     <img class="profile-pic" src="/<%=userName%>.jpg" alt="Profile Picture" />
     <h1><%=playerName%></h1>
     <center>
@@ -30,10 +31,11 @@
     </table></center>
     </div>
     <br><br>
+    
     <div class="account-sections">
     <div class="password-change">
-      <h2>Change Password</h2><br>
       <form action="/password-change" method="POST">
+        <h2>Change Password</h2><br>
         <input
           type="password"
           id="current-password"
@@ -54,8 +56,8 @@
       </form>
     </div>
     <div class="account-deletion">
-        <h2>Delete Account</h2><br>
-        <form action="/delete-account" method="POST">
+      <form action="/delete-account" method="POST">
+          <h2>Delete Account</h2><br>
           <textarea
             id="deletion-reason"
             name="deletion-reason"
@@ -63,10 +65,26 @@
             placeholder="Reason for Account Deletion"
           ></textarea><br />
           <center>
-            <input type="submit" value="Delete Account" />
+            <input class="delete-button" type="submit" value="Delete Account" />
+          </center>
+        </form>
+      </div>
+      <div class="account-deletion">
+        <form action="/delete-account" method="POST">
+          <h2>Change Display Name</h2><br>
+          <input
+          type="text"
+          id="displayName"
+          name="displayName"
+          required
+          placeholder="New Display Name"
+        /><br />
+          <center>
+            <input type="submit" value="Submit" />
           </center>
         </form>
       </div>
     </div>
+  </div>
   </body>
 </html>

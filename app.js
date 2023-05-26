@@ -28,10 +28,12 @@ app.use(express.static('public'));
 const upload = multer({
     storage: multer.diskStorage({
       destination: (req, file, cb) => {
+        console.log("destination:"+req.body.userName);
         cb(null, 'uploads/');
       },
       filename: (req, file, cb) => {
-        const userName = req.body.userName;
+          const userName = req.body.userName;
+          console.log("filename:"+userName);
         cb(null, userName+'.jpg');
       }
     })
@@ -115,6 +117,7 @@ app.listen(PORT, () => {
 
 app.post('/regester', upload.single("avatar"), async (req, res) => {
     console.log("regester post request");
+    console.log(req.body);
     let saltRounds = 10;
     let userName = req.body.userName;
     let password = req.body.password;

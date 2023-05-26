@@ -80,7 +80,7 @@ body {
     cursor: pointer;
   }
   
-  #profile-pic-input {
+  #avatar {
     display: none;
   }body {
     background-image: url('/images/loginbg1.png');
