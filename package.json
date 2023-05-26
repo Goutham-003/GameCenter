@@ -16,7 +16,7 @@
     "ejs": "^3.1.9",
     "express": "^4.18.2",
     "express-session": "^1.17.3",
-    "mongoose": "^7.2.0",
+    "mongoose": "^7.2.1",
     "multer": "^1.4.5-lts.1"
   },
   "repository": {
@@ -26,5 +26,6 @@
   "bugs": {
     "url": "https://github.com/Goutham-003/GameMaster/issues"
   },
-  "homepage": "https://github.com/Goutham-003/GameMaster#readme"
+  "homepage": "https://github.com/Goutham-003/GameMaster#readme",
+  "keywords": []
 }

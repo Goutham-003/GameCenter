@@ -1,17 +1,71 @@
+
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+<html>
+  <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>profile</title>
-</head>
-<body>
+    <title>User Profile</title>
+    <link rel="stylesheet" type="text/css" href="/css/profile.css">
+    
+  </head>
+  <body>
+    <img class="profile-pic" src="/sgoutham003.jpg" alt="Profile Picture" />
     <h1><%=playerName%></h1>
-    <% for(var i = 0; i < scoreCard.length; i++) { %>
-        <p><%=scoreCard[i].gameName%></p>
-        <p><%=scoreCard[i].highScore%></p>
-        <br><br><br>
+    <center>
+    <div class="tab">
+    <table>
+      <tr>
+        <th><h3>Game</h3></th>
+        <th><h3>High Score</h3></th>
+      </tr>
+      <% for(var i = 0; i < scoreCard.length; i++) { %>
+        <tr>
+        <td>
+        <img src="/images/gamelogos/<%=scoreCard[i].gameName %>.png" alt="Profile Picture" class="game-logo">
+        <h4><%=scoreCard[i].gameName%></h4>
+        </td>
+        <td><h4><%=scoreCard[i].highScore%></h4></td>
+        </tr>
           <%}%>
-</body>
+    </table></center>
+    </div>
+    <br><br>
+    <div class="account-sections">
+    <div class="password-change">
+      <h2>Change Password</h2><br>
+      <form action="/password-change" method="POST">
+        <input
+          type="password"
+          id="current-password"
+          name="current-password"
+          required
+          placeholder="Current Password"
+        /><br />
+        <input
+          type="password"
+          id="new-password"
+          name="new-password"
+          required
+          placeholder="New Password"/>
+          <br />
+        <center>
+            <input type="submit" value="Change Password" />
+        </center>
+      </form>
+    </div>
+    <div class="account-deletion">
+        <h2>Delete Account</h2><br>
+        <form action="/delete-account" method="POST">
+          <textarea
+            id="deletion-reason"
+            name="deletion-reason"
+            required
+            placeholder="Reason for Account Deletion"
+          ></textarea><br />
+          <center>
+            <input type="submit" value="Delete Account" />
+          </center>
+        </form>
+      </div>
+    </div>
+  </body>
 </html>

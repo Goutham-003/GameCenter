@@ -161,8 +161,5 @@ app.get('/logout', (req, res) => {
 app.get('/profile', async (req, res)=>{
     let player = await server.getPlayer(req.session.userName);
     let scoreCard = await server.getScoreCard(req.session.userName);
-    console.log(player);
-    console.log(scoreCard);
     res.render('profile',{playerName:player.displayName, scoreCard:scoreCard});
-
 })
