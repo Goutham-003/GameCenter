@@ -220,6 +220,13 @@ app.get('/profile', async (req, res)=>{
     res.render('profile',{playerName:player.displayName, scoreCard:scoreCard, userName:req.session.userName});
 })
 
+/**
+ * get request route to get the avatar of a player
+ * @param {Request} req
+ * @param {Response} res
+ * @returns
+ *  
+*/
 app.get('/avatar/:id', async (req, res) => {
     try {
         console.log(req.params.id);
@@ -233,13 +240,20 @@ app.get('/avatar/:id', async (req, res) => {
     }
   });
 
-  app.post('/profile/change', upload.single("avatar"), async (req, res) => {
-      const {displayName, newPassword} = req.body;
-      const avatar = req.file;
-      console.log(displayName, newPassword, avatar);
-      console.log(req.body);
-      const hashedpassword = bcrypt.hashSync(newPassword, 10);
-      console.log("regester post request");
+/**
+ * post request for changing the profile of a player
+ * @param {Request} req
+ * @param {Response} res
+ * @returns
+ * 
+*/
+app.post('/profile/change', upload.single("avatar"), async (req, res) => {
+    const {displayName, newPassword} = req.body;
+    const avatar = req.file;
+    console.log(displayName, newPassword, avatar);
+    console.log(req.body);
+    const hashedpassword = bcrypt.hashSync(newPassword, 10);
+    console.log("regester post request");
     console.log('Hashed password:', hashedpassword);
     await server.updatePlayer(req.session.userName, displayName, hashedpassword, avatar);
     res.redirect('/profile');
