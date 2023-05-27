@@ -1,30 +1,60 @@
 require('dotenv').config();
-
+const { MongoClient, GridFSBucket } = require('mongodb');
 const mongoose = require('mongoose');
 const Player = require('../models/player');
 const ScoreCard = require('../models/scorecard');
 const url = `${process.env.MONGO_URL}`;
 const bcrypt = require('bcryptjs');
+const { ObjectId } = require('mongodb');
 
 
-// connection
+/**
+ * Connect to MongoDB Atlas
+ */
 mongoose.connect(url, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-  })
-    .then(() => console.log("Connected to MongoDB Atlas"))
-    .catch(error => console.error(error));
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+})
+  .then(() => console.log("Connected to MongoDB Atlas"))
+  .catch(error => console.error(error));
 
 
+
+const client = new MongoClient(url, { useNewUrlParser: true, useUnifiedTopology: true });
+client.connect((err) => {
+  if (err) {
+    console.error('Failed to connect to MongoDB:', err);
+    return;
+  }
+  console.log('Connected to MongoDB');
+});
+
+const db = client.db();
+const bucket = new GridFSBucket(db, {
+  bucketName: 'avatars'
+});
+/**
+ *  get player document
+ * @param {Sting} username 
+ * @returns player document
+ */
 async function getPlayer(username) {
-    try {
-        const player = await Player.findOne({ userName: username });
-        return player; // Return the player document
-    } catch (err) {
-        throw new Error("Player not found" + err); // Throw an error to be caught by the caller
-    }
+  try {
+    const player = await Player.findOne({ userName: username });
+    return player; // Return the player document
+  } catch (err) {
+    throw new Error("Player not found" + err); // Throw an error to be caught by the caller
+  }
 }
-module.exports.getPlayer = getPlayer;      
+module.exports.getPlayer = getPlayer;
+
+
+/**
+ * validate login credentials
+ * @param {String} username 
+ * @param {String} password 
+ * @returns 1 if login successful, 0 if password is incorrect, -1 if username is incorrect
+ */
 module.exports.validateLogin = async (username, password) => {
   const player = await getPlayer(username);
   if (player != null) {
@@ -37,105 +67,151 @@ module.exports.validateLogin = async (username, password) => {
       return 0;
     }
   }
-  else{
+  else {
     return -1;
   }
 };
-// add a new player
-module.exports.createPlayer = (username, password, displayName) => {
-    const hashedpassword = bcrypt.hashSync(password, 10);
-    return addPlayerCard(username, hashedpassword, displayName).then(() => {
-       return addScoreCard(username);
-    }).catch((err) => {
-        console.error("Error saving player:", err);
-        throw err; // reject the Promise with the error
-        });
+
+
+
+/**
+ * creates a new player
+ * @param {String} username 
+ * @param {String} password 
+ * @param {String} displayName 
+ * @param {String} avatar 
+ * @returns 1 if player created successfully
+ */
+module.exports.createPlayer = (username, password, displayName, avatar) => {
+  const hashedpassword = bcrypt.hashSync(password, 10);
+  return addPlayerCard(username, hashedpassword, displayName, avatar).then(() => {
+    return addScoreCard(username);
+  }).catch((err) => {
+    console.error("Error saving player:", err);
+    throw err; // reject the Promise with the error
+  });
 }
-function addPlayerCard(username, password, displayName) {
-    let player = new Player({
-      userName: username,
-      password: password,
-      displayName: displayName
-    });
-    return player.save().then(() => {
-        console.log("Player saved");
-        return 1;
-      }).catch((err) => {
-        console.error("Error saving player:", err);
-        throw err; // reject the Promise with the error
-      });
+
+/**
+ * Adds player document
+ * @param {String} username 
+ * @param {String} password 
+ * @param {String} displayName 
+ * @param {String} avatar 
+ * @returns 1 if player created successfully
+ * @throws Error if player creation fails
+ */
+function addPlayerCard(username, password, displayName, avatar) {
+  let player = new Player({
+    userName: username,
+    password: password,
+    displayName: displayName,
+  });
+  if (avatar) {
+    const uploadStream = bucket.openUploadStream(username);
+    uploadStream.end(avatar.buffer);
+    player.avatar = {
+      data: uploadStream.id.toString(),
+      contentType: avatar.mimetype
+    };
   }
 
-// get a player scorecard
-function addScoreCard (username){
-    let scoreCard = new ScoreCard({
-        username: username,
-        totalScore: 0,
-        gameCard: []
-    });
-    scoreCard.save().then(() => {
-        return 1;
-    }).catch((err) => {
-        return new Error("Score Card Updation failure" + err);
-    });
-}
-
-// update a player scorecard
-module.exports.updateScore = (userName, gameName, score) =>{
-    ScoreCard.findOne({username: userName}).then((player) => {
-        let gameScore = player.gameScores.find(gs => gs.gameName === gameName);
-        if (gameScore) {
-            // Update the score if it's greater than the high score
-            if (score > gameScore.highScore) {
-                player.totalScore += score - gameScore.highScore;
-                gameScore.highScore = score;
-            }
-        }
-        else{
-            gameScore = { gameName: gameName, highScore: score };
-            player.gameScores.push(gameScore);
-            player.totalScore += score;
-        }
-        player.save().catch((err) => {
-        return new Error("Player updation failure" + err);
-          });
-    }).catch((err) => {
-        return new Error("Player not found" + err);
-    });
+  return player.save().then(() => {
+    console.log("Player saved");
     return 1;
+  }).catch((err) => {
+    console.error("Error saving player:", err);
+    throw err; // reject the Promise with the error
+  });
+}
+
+/**
+ * Creates a ScoreCard document
+ * @param {String} username 
+ */
+function addScoreCard(username) {
+  let scoreCard = new ScoreCard({
+    username: username,
+    totalScore: 0,
+    gameCard: []
+  });
+  scoreCard.save().then(() => {
+    return 1;
+  }).catch((err) => {
+    return new Error("Score Card Updation failure" + err);
+  });
+}
+
+/**
+ * updates game score and high score if score is greater than high score
+ * @param {Sting} userName 
+ * @param {String} gameName 
+ * @param {number} score 
+ * @returns 1 if score updated successfully
+ */
+module.exports.updateScore = (userName, gameName, score) => {
+  ScoreCard.findOne({ username: userName }).then((player) => {
+    let gameScore = player.gameScores.find(gs => gs.gameName === gameName);
+    if (gameScore) {
+      // Update the score if it's greater than the high score
+      if (score > gameScore.highScore) {
+        player.totalScore += score - gameScore.highScore;
+        gameScore.highScore = score;
+      }
+    }
+    else {
+      gameScore = { gameName: gameName, highScore: score };
+      player.gameScores.push(gameScore);
+      player.totalScore += score;
+    }
+    player.save().catch((err) => {
+      return new Error("Player updation failure" + err);
+    });
+  }).catch((err) => {
+    return new Error("Player not found" + err);
+  });
+  return 1;
 }
 
 
-
+/**
+ * 
+ * @param {String} userName 
+ * @param {String} gameName 
+ * @returns high score of the player for the game
+ */
 module.exports.getHighScore = async (userName, gameName) => {
-    try {
-      const player = await ScoreCard.findOne({ username: userName });
-      if (player) {
-        const gameScore = player.gameScores.find((gs) => gs.gameName === gameName);
-        console.log(gameScore);
-        if (gameScore) {
-          return gameScore.highScore;
-        } else {
-          return 0;
-        }
+  try {
+    const player = await ScoreCard.findOne({ username: userName });
+    if (player) {
+      const gameScore = player.gameScores.find((gs) => gs.gameName === gameName);
+      console.log(gameScore);
+      if (gameScore) {
+        return gameScore.highScore;
       } else {
         return 0;
       }
-    } catch (err) {
-      throw new Error("Player not found" + err);
+    } else {
+      return 0;
     }
-  };
+  } catch (err) {
+    throw new Error("Player not found" + err);
+  }
+};
 
-
+/**
+ * 
+ * @returns top 10 players
+ */
 module.exports.getTopPlayers = async () => {
   let topPlayers = [];
   try {
     let scorecards = await ScoreCard.find().sort({ totalScore: -1 }).limit(10);
     // console.log(scorecards);
-    for(i = 0; i < scorecards.length; i++){
-      let player = await Player.findOne({userName: scorecards[i].username});
+    for (i = 0; i < scorecards.length; i++) {
+      let player = await Player.findOne({ userName: scorecards[i].username });
       // topPlayers.push(player);
-      topPlayers.push({displayName: player.displayName, score: scorecards[i].totalScore, userName: player.userName});
+      topPlayers.push({ displayName: player.displayName, score: scorecards[i].totalScore, userName: player.userName });
 
     }
     // console.log(topPlayers);
@@ -147,20 +223,25 @@ module.exports.getTopPlayers = async () => {
   return topPlayers;
 }
 
+/**
+ * 
+ * @param {String} userName 
+ * @returns scorecard of the player
+ */
 module.exports.getScoreCard = async (userName) => {
   console.log("In server");
   const query = { username: userName };
-  
+
   try {
     const scoreCard = await ScoreCard.findOne(query);
     // console.log("ScoreCard:");
     // console.log(scoreCard);
     // console.log(scoreCard?.gameScores);
-    
+
     if (!scoreCard || !scoreCard.gameScores || scoreCard.gameScores.length === 0) {
       return []; // Return an empty list when scoreCard has no elements
     }
-    
+
     const gameScores = scoreCard.gameScores.map((score) => {
       return { gameName: score.gameName, highScore: score.highScore };
     });
@@ -172,6 +253,63 @@ module.exports.getScoreCard = async (userName) => {
   }
 };
 
+
+
+/**
+ * getAvatar of the player
+ * @param {String} userName
+ * @returns avatar of the player
+ * @throws Error if player not found
+ * 
+ */
+module.exports.getAvatar = async (userName) => {
+ try{
+
+   const player = await getPlayer(userName);
+   if (!player || !player.avatar || !player.avatar.data) {
+     throw new Error('Avatar not found');
+    }
+    console.log(player.avatar.data);
+    // const fileIds = await db.collection('avatars.files').distinct('_id');
+    // console.log('All file IDs:', fileIds, fileIds == player.avatar.data);
+    const downloadStream = await bucket.openDownloadStream(new ObjectId(player.avatar.data));
+    return {downloadStream: downloadStream, contentType: player.avatar.contentType};
+  }
+  catch(err){
+    console.error("Error in getting avatar:", err);
+    throw err;
+  }
+
+}
+
+
+module.exports.updatePlayer = async (userName, displayName, password, avatar) => {
+  try {
+    const player = await getPlayer(userName);
+    if (!player) {
+      throw new Error('Player not found');
+    }
+    if(displayName && displayName !== ''){
+      player.displayName = displayName;
+    }
+    if(password && password !== ''){
+      player.password = password;
+    }
+    if(avatar){
+      const uploadStream = bucket.openUploadStream(userName);
+      uploadStream.end(avatar.buffer);
+      player.avatar = {
+        data: uploadStream.id.toString(),
+        contentType: avatar.mimetype
+      };
+    }
+    await player.save();
+    return 1;
+  } catch (err) {
+    console.error("Error in updating player:", err);
+    throw err;
+  }
+};
 
 
 

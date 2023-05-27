@@ -26,18 +26,11 @@ app.use(express.static('public'));
 
 
 const upload = multer({
-    storage: multer.diskStorage({
-      destination: (req, file, cb) => {
-        console.log("destination:"+req.body.userName);
-        cb(null, 'uploads/');
-      },
-      filename: (req, file, cb) => {
-          const userName = req.body.userName;
-          console.log("filename:"+userName);
-        cb(null, userName+'.jpg');
-      }
-    })
-});   
+    storage: multer.memoryStorage()
+  });
+/**
+ * Session storage configuration
+ */   
 const sessionStorage = MongoStore.create({
     mongoUrl: process.env.MONGO_URL,
     dbName : 'GameMaster',
@@ -45,6 +38,10 @@ const sessionStorage = MongoStore.create({
     ttl: 60 * 60 * 24, // 1 day,
     autoRemove: 'native'
 });
+
+/**
+ * session establishment
+ */
 app.use(session({
     key: 'user_sid',
     secret: key,
@@ -55,6 +52,14 @@ app.use(session({
         expires: 100 * 60 * 60 * 24
     }
 }));
+
+/**
+ * Middleware to validate session
+ * @param {Request} req
+ * @param {Response} res
+ * @param {Next} next
+ * @returns 
+ */
 validate = (req, res, next)=>{
     if(req.session.isAuth === true){
         next();
@@ -62,6 +67,7 @@ validate = (req, res, next)=>{
         res.render('home');
     }
 }
+
 app.get('/', (req, res) => {
     if(req.session.isAuth === true){
         res.redirect('/dashboard');
@@ -69,11 +75,17 @@ app.get('/', (req, res) => {
     res.render('home');
     }
 });
+
+/**
+ * post request for login of a new user
+ * @param {Request} req
+ * @param {Response} res
+ * @returns
+ */
 app.post('/login', async (req, res) => {
     // Handle the login form submission
     const userName = req.body.userName;
     const password = req.body.password;
-    // console.log( await server.validateLogin(userName, password));
     // Perform authentication
     let is_valid = await server.validateLogin(userName, password);
     console.log("isvalid " + is_valid);
@@ -89,11 +101,21 @@ app.post('/login', async (req, res) => {
             res.send("User doesn't exist");
 });
 
+/**
+ * dashboard route for the dashboard page (get request)
+ * @param {Request} req
+ * @param {Response} res
+ * @returns
+ */
 app.get('/dashboard',validate, async (req, res) => {
     let games = ["simon", "snake", "card","dino","flappy"];
      res.render('dashboard',{games:games, userName:req.session.userName});
     });
 
+/**
+ * games route for each game in the dashboard (get request)
+ * @param {Request} req
+ */
 app.get("/game/:gamename", validate, async (req, res) => {
     try {
       const gamename = req.params.gamename;
@@ -110,21 +132,21 @@ app.get("/game/:gamename", validate, async (req, res) => {
       res.status(500).send("Internal Server Error");
     }
   });
-app.listen(PORT, () => {
-    // console.log('Example app listening on port https://localhost:8080');
-    console.log(`Example app listening on port ${PORT}`);
-});
 
+/**
+ * post request for regestering a new user (post request)
+ * @param {Request} req
+ * @param {Response} res
+ * @returns
+ */
 app.post('/regester', upload.single("avatar"), async (req, res) => {
     console.log("regester post request");
     console.log(req.body);
-    let saltRounds = 10;
-    let userName = req.body.userName;
-    let password = req.body.password;
-    let displayName = req.body.displayName;
-    let hashedpassword = bcrypt.hashSync(password, 10);
+    const {userName , password, displayName} = req.body;
+    const avatar = req.file;
+    const hashedpassword = bcrypt.hashSync(password, 10);
     console.log('Hashed password:', hashedpassword);
-    server.createPlayer(userName, password, displayName)
+    await server.createPlayer(userName, password, displayName, avatar)
     .then(() => {
         console.log('Player created successfully');
         // Perform additional actions if needed
@@ -140,12 +162,25 @@ app.post('/regester', upload.single("avatar"), async (req, res) => {
     res.redirect('/');
 });
 
+
+/**
+ * leaderboard route for the leaderboard page (get request)
+ * @param {Request} req
+ * @param {Response} res
+ * @returns
+ */
 app.get('/leaderboard',validate, async(req, res)=>{
     let players = await server.getTopPlayers();
     console.log(players);
     res.render('leaderboard',{players:players, userName:req.session.userName});
 });
 
+/**
+ * post request for updating the score of a player
+ * @param {Request} req
+ * @param {Response} res
+ * @returns
+ */
 app.post('/player/update', (req, res) => {
     let userName = req.session.userName;
     let gameName = req.body.gameName;
@@ -156,7 +191,12 @@ app.post('/player/update', (req, res) => {
     server.updateScore(userName, gameName, score);
 });
 
-
+/**
+ * logout route for logging out a user (get request)
+ * @param {Request} req
+ * @param {Response} res
+ * @returns
+ */
 app.get('/logout', (req, res) => {
     req.session.destroy((err) => {
         if(err) {
@@ -166,6 +206,13 @@ app.get('/logout', (req, res) => {
     });
 });
 
+/**
+ * profile route for the profile page (get request)
+ * @param {Request} req
+ * @param {Response} res
+ * @returns
+ * 
+ */
 app.get('/profile', async (req, res)=>{
     let player = await server.getPlayer(req.session.userName);
     console.log(player);
@@ -173,6 +220,38 @@ app.get('/profile', async (req, res)=>{
     res.render('profile',{playerName:player.displayName, scoreCard:scoreCard, userName:req.session.userName});
 })
 
-app.post('/profile/change', upload.single("avatar"), async (req, res) => {
-    
+app.get('/avatar/:id', async (req, res) => {
+    try {
+        console.log(req.params.id);
+    //   const player = await Player.findById(req.params.id);
+        const {downloadStream, contentType} = await server.getAvatar(req.params.id);
+        res.set('Content-Type', contentType);
+        downloadStream.pipe(res);
+    } catch (error) {
+      console.error(error);
+      res.status(404).json({ message: 'Avatar not found' });
+    }
+  });
+
+  app.post('/profile/change', upload.single("avatar"), async (req, res) => {
+      const {displayName, newPassword} = req.body;
+      const avatar = req.file;
+      console.log(displayName, newPassword, avatar);
+      console.log(req.body);
+      const hashedpassword = bcrypt.hashSync(newPassword, 10);
+      console.log("regester post request");
+    console.log('Hashed password:', hashedpassword);
+    await server.updatePlayer(req.session.userName, displayName, hashedpassword, avatar);
+    res.redirect('/profile');
+});
+
+
+/**
+ * Server listening on port 8080
+ * @param {Number} PORT
+ * @returns
+ */
+app.listen(PORT, () => {
+    // console.log('Example app listening on port https://localhost:8080');
+    console.log(`Example app listening on port ${PORT}`);
 });
