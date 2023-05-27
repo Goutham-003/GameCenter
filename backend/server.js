@@ -26,7 +26,7 @@ client.connect((err) => {
     console.error('Failed to connect to MongoDB:', err);
     return;
   }
-  console.log('Connected to MongoDB');
+  console.log('Connected to MongoDB client');
 });
 
 const db = client.db();
@@ -60,10 +60,8 @@ module.exports.validateLogin = async (username, password) => {
   if (player != null) {
     const result = await bcrypt.compare(password, player.password);
     if (result) {
-      console.log(1);
       return 1;
     } else {
-      console.log(0);
       return 0;
     }
   }
@@ -185,7 +183,6 @@ module.exports.getHighScore = async (userName, gameName) => {
     const player = await ScoreCard.findOne({ username: userName });
     if (player) {
       const gameScore = player.gameScores.find((gs) => gs.gameName === gameName);
-      console.log(gameScore);
       if (gameScore) {
         return gameScore.highScore;
       } else {
@@ -207,14 +204,11 @@ module.exports.getTopPlayers = async () => {
   let topPlayers = [];
   try {
     let scorecards = await ScoreCard.find().sort({ totalScore: -1 }).limit(10);
-    // console.log(scorecards);
     for (i = 0; i < scorecards.length; i++) {
       let player = await Player.findOne({ userName: scorecards[i].username });
-      // topPlayers.push(player);
       topPlayers.push({ displayName: player.displayName, score: scorecards[i].totalScore, userName: player.userName });
 
     }
-    // console.log(topPlayers);
   }
   catch (err) {
     console.error("Error in getting top players usernames:", err);
@@ -229,14 +223,10 @@ module.exports.getTopPlayers = async () => {
  * @returns scorecard of the player
  */
 module.exports.getScoreCard = async (userName) => {
-  console.log("In server");
   const query = { username: userName };
 
   try {
     const scoreCard = await ScoreCard.findOne(query);
-    // console.log("ScoreCard:");
-    // console.log(scoreCard);
-    // console.log(scoreCard?.gameScores);
 
     if (!scoreCard || !scoreCard.gameScores || scoreCard.gameScores.length === 0) {
       return []; // Return an empty list when scoreCard has no elements
@@ -245,7 +235,6 @@ module.exports.getScoreCard = async (userName) => {
     const gameScores = scoreCard.gameScores.map((score) => {
       return { gameName: score.gameName, highScore: score.highScore };
     });
-    console.log(gameScores);
     return gameScores;
   } catch (err) {
     console.error("Error in getting scorecard:", err);
@@ -269,9 +258,6 @@ module.exports.getAvatar = async (userName) => {
    if (!player || !player.avatar || !player.avatar.data) {
      throw new Error('Avatar not found');
     }
-    console.log(player.avatar.data);
-    // const fileIds = await db.collection('avatars.files').distinct('_id');
-    // console.log('All file IDs:', fileIds, fileIds == player.avatar.data);
     const downloadStream = await bucket.openDownloadStream(new ObjectId(player.avatar.data));
     return {downloadStream: downloadStream, contentType: player.avatar.contentType};
   }
@@ -296,6 +282,12 @@ module.exports.updatePlayer = async (userName, displayName, password, avatar) =>
       player.password = password;
     }
     if(avatar){
+      // Delete previous avatar files and chunks
+      if (player.avatar && player.avatar.data) {
+        const prevAvatarId = new ObjectId(player.avatar.data);
+        await bucket.delete(prevAvatarId);
+      }
+      // Upload new avatar
       const uploadStream = bucket.openUploadStream(userName);
       uploadStream.end(avatar.buffer);
       player.avatar = {

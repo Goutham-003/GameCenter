@@ -9,7 +9,7 @@ const { set } = require('mongoose');
 const app = express();
 const PORT = process.env.PORT || 8080;
 const key = process.env.KEY;
-
+const saltRounds = process.env.saltRounds;
 
 app.use(bodyparser.urlencoded({extended: true}));
 app.use(bodyparser.json());
@@ -33,7 +33,7 @@ const upload = multer({
  */   
 const sessionStorage = MongoStore.create({
     mongoUrl: process.env.MONGO_URL,
-    dbName : 'GameMaster',
+    dbName : process.env.DatabaseName,
     collectionName: 'sessions',
     ttl: 60 * 60 * 24, // 1 day,
     autoRemove: 'native'
@@ -88,7 +88,6 @@ app.post('/login', async (req, res) => {
     const password = req.body.password;
     // Perform authentication
     let is_valid = await server.validateLogin(userName, password);
-    console.log("isvalid " + is_valid);
         if ( is_valid === 1) {
             // Set the session variables
             req.session.userName = userName;
@@ -119,12 +118,10 @@ app.get('/dashboard',validate, async (req, res) => {
 app.get("/game/:gamename", validate, async (req, res) => {
     try {
       const gamename = req.params.gamename;
-      console.log(gamename);
       const highscore = await server.getHighScore(
         req.session.userName,
         gamename
       );
-      console.log("app.js " + highscore);   
       res.render(gamename, {userName: req.session.userName, highScore: highscore});
     } catch (err) {
       // Handle the error appropriately
@@ -140,12 +137,9 @@ app.get("/game/:gamename", validate, async (req, res) => {
  * @returns
  */
 app.post('/regester', upload.single("avatar"), async (req, res) => {
-    console.log("regester post request");
-    console.log(req.body);
     const {userName , password, displayName} = req.body;
     const avatar = req.file;
-    const hashedpassword = bcrypt.hashSync(password, 10);
-    console.log('Hashed password:', hashedpassword);
+    const hashedpassword = bcrypt.hashSync(password, saltRounds);
     await server.createPlayer(userName, password, displayName, avatar)
     .then(() => {
         console.log('Player created successfully');
@@ -155,9 +149,6 @@ app.post('/regester', upload.single("avatar"), async (req, res) => {
         console.error('Error creating player:', error);
         // Handle the error appropriately
     });
-    console.log("successfull");
-    
-    console.log(userName + " " + password + " " + displayName);
         // Use the hasheduserName
     res.redirect('/');
 });
@@ -171,7 +162,6 @@ app.post('/regester', upload.single("avatar"), async (req, res) => {
  */
 app.get('/leaderboard',validate, async(req, res)=>{
     let players = await server.getTopPlayers();
-    console.log(players);
     res.render('leaderboard',{players:players, userName:req.session.userName});
 });
 
@@ -185,9 +175,6 @@ app.post('/player/update', (req, res) => {
     let userName = req.session.userName;
     let gameName = req.body.gameName;
     let score = req.body.score;
-    console.log(userName);
-    console.log(gameName);
-    console.log(score);
     server.updateScore(userName, gameName, score);
 });
 
@@ -215,7 +202,6 @@ app.get('/logout', (req, res) => {
  */
 app.get('/profile', async (req, res)=>{
     let player = await server.getPlayer(req.session.userName);
-    console.log(player);
     let scoreCard = await server.getScoreCard(req.session.userName);
     res.render('profile',{playerName:player.displayName, scoreCard:scoreCard, userName:req.session.userName});
 })
@@ -229,8 +215,6 @@ app.get('/profile', async (req, res)=>{
 */
 app.get('/avatar/:id', async (req, res) => {
     try {
-        console.log(req.params.id);
-    //   const player = await Player.findById(req.params.id);
         const {downloadStream, contentType} = await server.getAvatar(req.params.id);
         res.set('Content-Type', contentType);
         downloadStream.pipe(res);
@@ -250,11 +234,7 @@ app.get('/avatar/:id', async (req, res) => {
 app.post('/profile/change', upload.single("avatar"), async (req, res) => {
     const {displayName, newPassword} = req.body;
     const avatar = req.file;
-    console.log(displayName, newPassword, avatar);
-    console.log(req.body);
-    const hashedpassword = bcrypt.hashSync(newPassword, 10);
-    console.log("regester post request");
-    console.log('Hashed password:', hashedpassword);
+    const hashedpassword = bcrypt.hashSync(newPassword, saltRounds);
     await server.updatePlayer(req.session.userName, displayName, hashedpassword, avatar);
     res.redirect('/profile');
 });
