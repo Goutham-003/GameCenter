@@ -35,5 +35,14 @@ function previewImage(event) {
       reader.readAsDataURL(input.files[0]);
     }
   }
-  
+  function validateForm() {
+    var password = document.getElementById("rpassword").value;
+    var confirmPassword = document.getElementById("confirm_password").value;
+    if (password !== confirmPassword) {
+      alert("Password and confirm password do not match");
+      return false; // Prevent form submission
+    }
+
+    return true; // Allow form submission
+  }
   
