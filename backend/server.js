@@ -269,40 +269,96 @@ module.exports.getAvatar = async (userName) => {
 }
 
 
-module.exports.updatePlayer = async (userName, displayName, password, avatar) => {
+// module.exports.updatePlayer = async (userName, displayName, password, avatar) => {
+//   try {
+//     const player = await getPlayer(userName);
+//     if (!player) {
+//       throw new Error('Player not found');
+//     }
+//     if(displayName && displayName !== ''){
+//       player.displayName = displayName;
+//     }
+//     if(password && password !== ''){
+//       player.password = password;
+//     }
+//     if(avatar){
+//       // Delete previous avatar files and chunks
+//       if (player.avatar && player.avatar.data) {
+//         const prevAvatarId = new ObjectId(player.avatar.data);
+//         await bucket.delete(prevAvatarId);
+//       }
+//       // Upload new avatar
+//       const uploadStream = bucket.openUploadStream(userName);
+//       uploadStream.end(avatar.buffer);
+//       player.avatar = {
+//         data: uploadStream.id.toString(),
+//         contentType: avatar.mimetype
+//       };
+//     }
+//     await player.save();
+//     return 1;
+//   } catch (err) {
+//     console.error("Error in updating player:", err);
+//     throw err;
+//   }
+// };
+
+
+module.exports.updateAvatar = async (userName, avatar) => {
   try {
     const player = await getPlayer(userName);
     if (!player) {
       throw new Error('Player not found');
     }
-    if(displayName && displayName !== ''){
-      player.displayName = displayName;
+    // Delete previous avatar files and chunks
+    if (player.avatar && player.avatar.data) {
+      const prevAvatarId = new ObjectId(player.avatar.data);
+      await bucket.delete(prevAvatarId);
     }
-    if(password && password !== ''){
-      player.password = password;
-    }
-    if(avatar){
-      // Delete previous avatar files and chunks
-      if (player.avatar && player.avatar.data) {
-        const prevAvatarId = new ObjectId(player.avatar.data);
-        await bucket.delete(prevAvatarId);
-      }
-      // Upload new avatar
-      const uploadStream = bucket.openUploadStream(userName);
-      uploadStream.end(avatar.buffer);
-      player.avatar = {
-        data: uploadStream.id.toString(),
-        contentType: avatar.mimetype
-      };
-    }
+    // Upload new avatar
+    const uploadStream = bucket.openUploadStream(userName);
+    uploadStream.end(avatar.buffer);
+    player.avatar = {
+      data: uploadStream.id.toString(),
+      contentType: avatar.mimetype
+    };
     await player.save();
     return 1;
   } catch (err) {
-    console.error("Error in updating player:", err);
+    console.error("Error in updating avatar:", err);
     throw err;
   }
-};
+}
 
+module.exports.updateDisplayName = async (userName, displayName) => {
+  try {
+    const player = await getPlayer(userName);
+    if (!player) {
+      throw new Error('Player not found');
+    }
+    player.displayName = displayName;
+    await player.save();
+    return 1;
+  } catch (err) {
+    console.error("Error in updating display name:", err);
+    throw err;
+  }
+}
+
+module.exports.updatePassword = async (userName, password) => {
+  try {
+    const player = await getPlayer(userName);
+    if (!player) {
+      throw new Error('Player not found');
+    }
+    player.password = password;
+    await player.save();
+    return 1;
+  } catch (err) {
+    console.error("Error in updating password:", err);
+    throw err;
+  }
+}
 
 
 

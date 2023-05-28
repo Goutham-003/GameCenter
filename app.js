@@ -5,11 +5,11 @@ const session = require('express-session');
 const MongoStore = require('connect-mongo');
 const bcrypt = require('bcryptjs');
 const multer = require('multer');
-const { set } = require('mongoose');
+// const { set } = require('mongoose');
 const app = express();
 const PORT = process.env.PORT || 8080;
 const key = process.env.KEY;
-const saltRounds = process.env.saltRounds;
+const saltRounds = 10;
 
 app.use(bodyparser.urlencoded({extended: true}));
 app.use(bodyparser.json());
@@ -138,8 +138,11 @@ app.get("/game/:gamename", validate, async (req, res) => {
  */
 app.post('/regester', upload.single("avatar"), async (req, res) => {
     const {userName , password, displayName} = req.body;
+    
     const avatar = req.file;
+    console.log(req.body);
     const hashedpassword = bcrypt.hashSync(password, saltRounds);
+    console.log(hashedpassword);
     await server.createPlayer(userName, password, displayName, avatar)
     .then(() => {
         console.log('Player created successfully');
@@ -231,14 +234,40 @@ app.get('/avatar/:id', async (req, res) => {
  * @returns
  * 
 */
-app.post('/profile/change', upload.single("avatar"), async (req, res) => {
-    const {displayName, newPassword} = req.body;
+// app.post('/profile/change', upload.single("avatar"), async (req, res) => {
+//     console.log(req.body);
+//     const {displayName, newPassword} = req.body;
+//     if(newPassword === '' && displayName === '' && req.file === undefined){
+//         console.log('here');
+//     }
+//     if(newPassword === '' && displayName === ''){
+//         await server.updatePlayer(req.session.userName,  null, null, avatar);
+//     }
+//     const avatar = req.file;
+//     const hashedpassword = bcrypt.hashSync(newPassword, saltRounds);
+//     await server.updatePlayer(req.session.userName, displayName, hashedpassword, avatar);
+//     res.redirect('/profile');
+// });
+
+app.post('/profile/change/avatar', upload.single('avatar'), async (req, res) => {
     const avatar = req.file;
-    const hashedpassword = bcrypt.hashSync(newPassword, saltRounds);
-    await server.updatePlayer(req.session.userName, displayName, hashedpassword, avatar);
+    await server.updateAvatar(req.session.userName, avatar);
     res.redirect('/profile');
 });
 
+app.post('/profile/change/displayName', async (req, res) => {
+    const {displayName} = req.body;
+    await server.updateDisplayName(req.session.userName, displayName);
+    res.redirect('/profile');
+});
+
+app.post('/profile/change/password', async (req, res) => {
+    console.log(req.body);
+    const {newPassword} = req.body;
+    const hashedpassword = bcrypt.hashSync(newPassword, saltRounds);
+    await server.updatePassword(req.session.userName, hashedpassword);
+    res.redirect('/profile');
+});
 
 /**
  * Server listening on port 8080

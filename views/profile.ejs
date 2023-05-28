@@ -79,18 +79,22 @@
         </form>
       </div>
     </div> -->
-    <form action="/profile/change" method="post" enctype="multipart/form-data">
+    <form action="/profile/change/avatar" method="post" enctype="multipart/form-data">
       <label for="avatar">Update Avatar</label>
       <input type="file" id="avatar" name="avatar" accept="image/png, image/jpeg">
-
+      <input type="submit" value="Submit">
+    </form>
+    <form action="/profile/change/displayName" method="post">
       <label for="displayName">Change Display Name</label>
-      <input type="text" id="displayName" name="displayName" required placeholder="New Display Name" /><br />
+      <input type="text" id="displayName" name="displayName" placeholder="New Display Name" /><br />
+      <input type="submit" value="Submit">
+    </form>
+    <!-- <label for="current-password">Current Password</label>
+          <input type="password" id="current-password" name="current-password" required placeholder="Current Password" /><br /> -->
 
-      <!-- <label for="current-password">Current Password</label>
-      <input type="password" id="current-password" name="current-password" required placeholder="Current Password" /><br /> -->
-      
+    <form action="/profile/change/password" method="post">
       <label for="new-password">New Password</label>
-      <input type="password" id="newPassword" name="newPassword" required placeholder="New Password" /><br />
+      <input type="password" id="newPassword" name="newPassword" placeholder="New Password" /><br />
       <input type="submit" value="Submit">
     </form>
     </div>
