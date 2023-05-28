@@ -52,15 +52,17 @@ body {
     background-color: rgba(205, 127, 50, 0.712);
     border: #cd7f32 3px solid;
 }
-.player-card{
+/* .player-card{
+    justify-content: space-between;
     display: flex;
+    flex-wrap: wrap;
     background-color: rgba(140, 232, 255, 0.687);
     width: 50%;
     height: 70px;
     border-radius: 20px;
     border: lightblue 3px solid;
-    
-  }
+    gap: 10px;
+  } */
 .player-card:hover{
     transform: translateY(-10px);
     scale:0.99;
@@ -73,7 +75,8 @@ body {
     text-size-adjust: auto;
     margin: 10px;
   }
-.player-card img {
+/* .player-card img {
+    align-self: flex-start;
     width: 50px;
     height: 50px;
     border-radius: 50%;
@@ -85,4 +88,50 @@ body {
     font-family: 'Russo One' sans-serif;
     font-size: 1.5em;
     color: white;
+  } */
+  .player-card {
+    display: flex;
+    background-color: rgba(140, 232, 255, 0.687);
+    width: 50%;
+    height: 70px;
+    border-radius: 20px;
+    border: lightblue 3px solid;
+    align-items: center;
+    justify-content: space-between; /* Add this line to align items horizontally */
+    padding: 0 10px; /* Add some padding for spacing */
   }
+  
+  .player-card h3 {
+    margin: 5px 0; /* Adjust margin for the rank */
+  }
+  
+  .player-card img {
+    margin-left: 10px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-right: 10px; /* Add some spacing between the image and high score */
+  }
+  
+  .player-card .high-score {
+    text-align: end;
+    font-family: 'Russo One';
+    flex-grow : 1; /* Add this line to make the paragraph take up the remaining space */
+    color: white;
+    font-size: 1em;
+    margin: 0; /* Remove default margin */
+  }
+  
+  
+
+
+  @media (max-width: 1000px) {
+    .player-card .high-score {
+      display: none; /* Hide the paragraph element */
+    }
+  }
+@media screen and (max-width: 500px) {
+  .player-card h3, p{
+    display: none;
+  }
+}

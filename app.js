@@ -17,12 +17,6 @@ app.set('view engine', 'ejs');
 app.use(express.static('uploads'));
 app.use(express.static('public'));
 
-// app.use( (req, res, next) => {
-//     setTimeout(next, 1000);
-//     res.render('loading');
-//     console.log('preloader');
-//     next();
-//   });
 
 
 const upload = multer({
@@ -109,7 +103,7 @@ app.post('/login', async (req, res) => {
 app.get('/dashboard',validate, async (req, res) => {
     let games = ["simon", "snake", "card","dino","flappy"];
      res.render('dashboard',{games:games, userName:req.session.userName});
-    });
+});
 
 /**
  * games route for each game in the dashboard (get request)

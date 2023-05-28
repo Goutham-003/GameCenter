@@ -33,6 +33,12 @@ body > nav{
   border: 10px solid black;
   border-radius: 20%;
 }
+@media screen and (max-width: 1000px) {
+  .btn{
+    width: 150px;
+    height: 150px;
+  }
+}
 
 .game-over {
   background-color: red;
