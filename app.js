@@ -140,9 +140,7 @@ app.post('/regester', upload.single("avatar"), async (req, res) => {
     const {userName , password, displayName} = req.body;
     
     const avatar = req.file;
-    console.log(req.body);
     const hashedpassword = bcrypt.hashSync(password, saltRounds);
-    console.log(hashedpassword);
     await server.createPlayer(userName, password, displayName, avatar)
     .then(() => {
         console.log('Player created successfully');
@@ -262,7 +260,6 @@ app.post('/profile/change/displayName', async (req, res) => {
 });
 
 app.post('/profile/change/password', async (req, res) => {
-    console.log(req.body);
     const {newPassword} = req.body;
     const hashedpassword = bcrypt.hashSync(newPassword, saltRounds);
     await server.updatePassword(req.session.userName, hashedpassword);

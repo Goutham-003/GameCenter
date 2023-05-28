@@ -146,8 +146,8 @@
     border: 5px;
     background-repeat: no-repeat;
     background-attachment: fixed;
-    background-size: calc(100% + 5px) calc(100%);
-    background-size: cover;
+    background-size: calc(100%) calc(100%);
+    /* background-size: cover; */
     background-attachment: fixed;
     font-family: Arial, sans-serif;
     /* text-align: center; */
