@@ -46,8 +46,8 @@
     </div>
     <br><br>
 
-    <!-- <div class="account-sections">
-      <div class="password-change">
+    
+      <!-- <div class="password-change">
         <form action="/password-change" method="POST">
           <h2>Change Password</h2><br>
           <input type="password" id="current-password" name="current-password" required
@@ -79,11 +79,21 @@
         </form>
       </div>
     </div> -->
+    <center>
     <form action="/profile/change/avatar" method="post" enctype="multipart/form-data">
+      <!-- <label for="avatar">Update Avatar</label>
+      <input type="file" id="avatar" name="avatar" accept="image/png, image/jpeg"> -->
       <label for="avatar">Update Avatar</label>
-      <input type="file" id="avatar" name="avatar" accept="image/png, image/jpeg">
+      <div class="profile-picture">
+        <label for="avatar">
+          <img id="preview-image" src="/images/default-pr.png" alt="Profile Picture">
+          <input type="file" name="avatar" id="avatar" accept="image/png, image/jpeg" onchange="previewImage(event)">
+        </label>
+      </div>
+      <p style="color:red">*Update avatar by clicking above.</p>
       <input type="submit" value="Submit">
     </form>
+    <br><br>
     <form action="/profile/change/displayName" method="post">
       <label for="displayName">Change Display Name</label>
       <input type="text" id="displayName" name="displayName" placeholder="New Display Name" /><br />
@@ -93,11 +103,13 @@
           <input type="password" id="current-password" name="current-password" required placeholder="Current Password" /><br /> -->
 
     <form action="/profile/change/password" method="post">
-      <label for="new-password">New Password</label>
+      <label for="new-password">Change Password</label>
       <input type="password" id="newPassword" name="newPassword" placeholder="New Password" /><br />
       <input type="submit" value="Submit">
     </form>
     </div>
+  </center>
+    <script src="/JS/profile.js"></script>
 </body>
 
 </html>
