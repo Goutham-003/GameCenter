@@ -9,6 +9,7 @@
   "author": "ShaikRiyaz",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^5.1.0",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.2",
     "connect-mongo": "^5.0.0",
@@ -16,8 +17,10 @@
     "ejs": "^3.1.9",
     "express": "^4.18.2",
     "express-session": "^1.17.3",
-    "mongoose": "^7.2.0",
-    "multer": "^1.4.5-lts.1"
+    "mongodb": "^5.5.0",
+    "mongoose": "^7.2.1",
+    "multer": "^1.4.5-lts.1",
+    "nodemon": "^2.0.22"
   },
   "repository": {
     "type": "git",
@@ -26,5 +29,6 @@
   "bugs": {
     "url": "https://github.com/Goutham-003/GameMaster/issues"
   },
-  "homepage": "https://github.com/Goutham-003/GameMaster#readme"
+  "homepage": "https://github.com/Goutham-003/GameMaster#readme",
+  "keywords": []
 }

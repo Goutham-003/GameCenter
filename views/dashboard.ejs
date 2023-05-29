@@ -14,7 +14,7 @@
             <div class="game-zone__cards">
                 <% for(var i = 0; i < games.length; i++) { %>
               <div class="game-card" onclick="window.location.href = '/game/<%=games[i]%>'">
-                <img src="/images/ironMan.jpg" alt="Game 1" class="game-card__image">
+                <img src="/images/gamelogos/<%=games[i]%>.png" alt="Game 1" class="game-card__image">
                 <h3 class="game-card__title"><%=games[i]%></h3>
               </div>
                 <%}%>

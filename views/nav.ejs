@@ -26,11 +26,13 @@
     }
     
     .navbar__right {
+      border-right: 25px;
       display: flex;
       align-items: center;
     }
     
     .navbar__profile {
+      padding-right: 25px;
       position: relative;
       display: flex;
       align-items: center;
@@ -84,7 +86,7 @@
   </div>
   <div class="navbar__right">
     <div class="navbar__profile">
-      <img src="/<%=userName %>.jpg" alt="Profile Picture" class="navbar__profile-picture">
+      <img src="/avatar/<%=userName %>" alt="Profile Picture" class="navbar__profile-picture">
       <div class="navbar__dropdown">
         <a href="/profile" class="profile">Profile</a>
         <a href="/leaderBoard" class="logout">LeaderBoard</a>
